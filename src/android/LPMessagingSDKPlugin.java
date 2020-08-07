@@ -2,6 +2,7 @@ package com.liveperson.plugin;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -283,11 +284,16 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                         e1.printStackTrace();
                     }
                     try {
-                        LivePerson.showConversation(cordova.getActivity());
+                        Context context = cordova.getActivity().getApplicationContext();
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        cordova.getActivity().startActivity(intent);
+
+                       // LivePerson.showConversation(cordova.getActivity());
                         PluginResult result = new PluginResult(PluginResult.Status.OK, json.toString());
                         result.setKeepCallback(true);
                         mCallbackContext.sendPluginResult(result);
                         setCallBack();
+                        
                     } catch (Exception e2) {
                         PluginResult result = new PluginResult(PluginResult.Status.ERROR, json.toString());
                         result.setKeepCallback(true);
@@ -313,7 +319,11 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 }
 
                 try {
-                    LivePerson.showConversation(cordova.getActivity(),token);
+                    Context context = cordova.getActivity().getApplicationContext();    
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    cordova.getActivity().startActivity(intent);
+
+                   // LivePerson.showConversation(cordova.getActivity(),token);
                     PluginResult result = new PluginResult(PluginResult.Status.OK, json.toString());
                     result.setKeepCallback(true);
                     mCallbackContext.sendPluginResult(result);
