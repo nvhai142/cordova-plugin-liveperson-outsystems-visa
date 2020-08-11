@@ -29,7 +29,7 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String LIVEPERSON_FRAGMENT = "liveperson_fragment";
     private ConversationFragment mConversationFragment;
-    String BrandID = "2022139";
+    String BrandID = "63168344";
     String AppID = "com.exchange.demoliveperson";
 
     private Menu mMenu;
