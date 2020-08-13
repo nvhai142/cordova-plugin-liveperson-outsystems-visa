@@ -42,7 +42,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     private static final String LIVEPERSON_FRAGMENT = "liveperson_fragment";
     private ConversationFragment mConversationFragment;
     String BrandID = "63168344";
-    String AppID = "com.outsystemsenterprise.aspirelifestylesdev.CosmoMobileApp";
+    String AppID = "com.exchange.demoliveperson";
 
     private Menu mMenu;
     String package_name ;
@@ -78,13 +78,13 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     protected void onStart(){
         super.onStart();
         initLivePerson();
-        setUserProfile();
+       // setUserProfile();
     }
 
 
     private void setUserProfile() {
             ConsumerProfile consumerProfile = new ConsumerProfile.Builder()
-                    .setFirstName("hai")
+                    .setFirstName("han")
                     .setLastName("nguyen")
                     .setPhoneNumber("123456789" + "|" + "hanit0693@gmail.com")
                     .build();
