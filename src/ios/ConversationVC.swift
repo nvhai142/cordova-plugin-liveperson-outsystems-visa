@@ -39,7 +39,8 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         LPMessagingSDK.instance.delegate = self
-        self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery("2022139")
+        let campaignInfo = LPCampaignInfo(campaignId: 1244787870, engagementId: 1246064870, contextId: nil)
+        self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery("47817293", campaignInfo: campaignInfo)
         self.configUI()
     }
 
@@ -47,8 +48,9 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     
     func configUI() {
         self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.navigationBar.barTintColor = UIColor.black
+        self.navigationController?.navigationBar.barTintColor = UIColor.userBubbleBackgroundColor
         self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white];
         self.title = "CHAT"
         
         let configUI = LPConfig.defaultConfiguration
@@ -98,18 +100,20 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         configUI.fileCellLoaderFillColor = UIColor.fileCellLoaderFillColor
         configUI.fileCellLoaderRingProgressColor = UIColor.fileCellLoaderRingProgressColor
         configUI.fileCellLoaderRingBackgroundColor = UIColor.fileCellLoaderRingBackgroundColor
-
+        configUI.isReadReceiptTextMode = false
+        configUI.checkmarkVisibility = .sentOnly
+        configUI.csatShowSurveyView = false 
     }
     
     @IBAction func cancelPressed(sender:Any) {
-        print("cancel")
+        if self.conversationQuery != nil {
+            LPMessagingSDK.instance.removeConversation(self.conversationQuery!)
+        }
         self.dismiss(animated: true, completion: nil)
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if let query = self.conversationQuery {
-            LPMessagingSDK.instance.removeConversation(query)
-        }
+
     }
 
     @IBAction func optionPressed(sender:Any) {

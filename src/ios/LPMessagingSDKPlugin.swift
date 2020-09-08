@@ -10,6 +10,7 @@ import Foundation
 import LPMessagingSDK
 import LPInfra
 import LPAMS
+import LPMonitoring
 
 extension String {
     
@@ -71,8 +72,10 @@ extension String {
         
         print("lpMessagingSdkInit brandID --> \(lpAccountNumber)")
         
+        let monitoringInitParams = LPMonitoringInitParams(appInstallID: "443bc965-320f-402b-92ce-3a79cf831267")
+
         do {
-            try LPMessagingSDK.instance.initialize(lpAccountNumber)
+            try LPMessagingSDK.instance.initialize(lpAccountNumber, monitoringInitParams: monitoringInitParams)
             
             // only set config if we have a valid argument
             // deprecated - should be done through direct editing of this function  for the relevant options
@@ -328,8 +331,10 @@ extension String {
         var conversationType = "authenticated";
 
         let token = command.arguments[1] as? String ?? ""
+        let partyID = command.arguments[2] as? String ?? ""
+        let engagement = command.arguments[3] as? String ?? ""
 
-        self.showConversation(brandID: brandID,authenticationCode: token)
+        self.showConversation(brandID: brandID,authenticationCode: token, partyID: partyID,engagementSTR: engagement)
 
         
         var response:[String:String];
@@ -431,24 +436,57 @@ extension String {
     /**
      Show conversation screen and use this ViewController as a container
      */
-    func showConversation(brandID: String, authenticationCode:String? = nil) {
+     func convertJsonToDic(json:String?)-> [[String: Any]]?{
+        if let jsonStr = json{
+            let data = Data(jsonStr.utf8)
+            do {
+                if let engagementAttributes = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                    return engagementAttributes
+                }else {
+                    return nil
+                }
+            } catch _ as NSError {
+                return nil
+            }
+        }else{
+            return nil
+        }
+    }
+    func showConversation(brandID: String, authenticationCode:String? = nil, partyID:String? = nil, engagementSTR:String? = nil) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let chatVC = storyboard.instantiateViewController(withIdentifier: "ConversationNavigationVC") as? UINavigationController {
             chatVC.modalPresentationStyle = .fullScreen
             self.viewController.present(chatVC, animated: true, completion: nil)
-            self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery(brandID)
+            
+            let entryPoints = ["http://www.liveperson-test.com",
+                           "sec://visa-dev",
+                           "lang://En"]
+
+             if let engagementAttributes = self.convertJsonToDic(json: engagementSTR){
+                    let monitoringParams = LPMonitoringParams(entryPoints: entryPoints, engagementAttributes: engagementAttributes, pageId: nil)
+                    let identity = LPMonitoringIdentity(consumerID: partyID, issuer: nil)
+                    LPMonitoringAPI.instance.sendSDE(identities: [identity], monitoringParams: monitoringParams, completion: { [weak self] (sendSdeResponse) in
+                        print("received send sde response with pageID: \(String(describing: sendSdeResponse.pageId))")
+                        // Save PageId for future reference
+                    }) { [weak self] (error) in
+                    
+                        print("send sde error: \(error.userInfo.description)")
+                    }
+             }
+
+            let campaignInfo = LPCampaignInfo(campaignId: 1244787870, engagementId: 1246064870, contextId: nil)
+
+            self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery(brandID, campaignInfo: campaignInfo)
              if authenticationCode == nil {
-                 print("@@@ ios -- showConversation ... unauthenticated no JWT token found")
 
                  LPMessagingSDK.instance.showConversation(self.conversationQuery!)
                  
              } else {
-                 print("@@@ ios -- showConversation ...authenticated session jwt token found! \(authenticationCode!)")
 
                  let conversationViewParams = LPConversationViewParams(conversationQuery: self.conversationQuery!, containerViewController: chatVC.viewControllers.first, isViewOnly: false)
                  let authenticationParams = LPAuthenticationParams(authenticationCode: nil, jwt: authenticationCode, redirectURI: nil)
-                 LPMessagingSDK.instance.showConversation(conversationViewParams, authenticationParams: nil)
+                 LPMessagingSDK.instance.showConversation(conversationViewParams, authenticationParams: authenticationParams)
             }
         }
         

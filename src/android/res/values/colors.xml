@@ -5,6 +5,7 @@
 <!--Android default colors-->
 <color name="colorPrimaryDark">#00574B</color>
 <color name="colorAccent">#D81B60</color>
+
 <color name="colorPrimary">#152B55</color>
 
 <color name="colorPrimary_text">#000000</color>
