@@ -37,6 +37,7 @@ import com.liveperson.messaging.sdk.api.callbacks.LogoutLivePersonCallback;
 import com.liveperson.monitoring.model.EngagementDetails;
 import com.liveperson.monitoring.model.LPMonitoringIdentity;
 import com.liveperson.monitoring.sdk.MonitoringParams;
+import com.liveperson.infra.MonitoringInitParams;
 import com.liveperson.monitoring.sdk.api.LivepersonMonitoring;
 import com.liveperson.monitoring.sdk.callbacks.EngagementCallback;
 import com.liveperson.monitoring.sdk.callbacks.MonitoringErrorType;
@@ -141,7 +142,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     }
 
 
-    private void initFragment() {
+    private void initFragment(CampaignInfo campaignInfo) {
         mConversationFragment = (ConversationFragment)getSupportFragmentManager().findFragmentByTag(LIVEPERSON_FRAGMENT);
         Log.d(TAG, "initFragment. mConversationFragment = " + mConversationFragment);
         if (mConversationFragment == null) {
@@ -160,14 +161,10 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             ConversationViewParams conversationViewParams = new ConversationViewParams(false);
 
            
-            try {
-                // Create Campaign Object
-                campaign = new CampaignInfo(Long.valueOf(1244787870), Long.valueOf(1246064870),"", "", "");
-                // Log
-            } catch (BadArgumentException e){
-                // Log Error
+            if(campaignInfo!=null){
+                conversationViewParams.setCampaignInfo(campaignInfo);
             }
-            conversationViewParams.setCampaignInfo(campaign);
+            conversationViewParams.setCampaignInfo(campaignInfo);
 
             authParams.setHostAppJWT(authCode);
             //authParams.addCertificatePinningKey(publicKey);
@@ -193,22 +190,19 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
         Bundle extras = getIntent().getExtras();
         String engagementAtt = "";
+        String entrypoint = "";
         if(extras != null) {
-            partyID= extras.getString("EXTRA_PARTYID");
             engagementAtt= extras.getString("EXTRA_ENGAGEMENT");
-        }    
-
-        // Create Entry Points JSON
+            entrypoint= extras.getString("EXTRA_ENTRYPOINT");
+        }   
+         
         JSONArray entryPoints = null;
         try {
-            entryPoints = new JSONArray("[\"http://www.liveperson-test.com\",\n" +
-                    "                   \"sec://visa-dev\",\n" +
-                    "                   \"lang://Eng\"]");
+            entryPoints = new JSONArray(entrypoint);
         } catch (JSONException e) {
             Log.e(TAG, "Error Creating Entry Points :: " + e);
         }
 
-        // Create Engagement Attributes
         JSONArray engagementAttributes = null;
         try {
             engagementAttributes = new JSONArray(engagementAtt);
@@ -216,7 +210,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             Log.e(TAG, "Error Creating Engagement Attr :: " + e);
         }
         MonitoringParams params = new MonitoringParams("PageId", entryPoints, engagementAttributes);
-        LPMonitoringIdentity identity = new  LPMonitoringIdentity(partyID,"");
+        LPMonitoringIdentity identity = new  LPMonitoringIdentity(null,"");
 
         // Get Engagement
         LivepersonMonitoring.getEngagement(getApplicationContext(), Arrays.asList(identity), params, new EngagementCallback() {
@@ -238,25 +232,21 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     // Try-Catch Block
                     try {
                         // Create Campaign Object
-                        campaign = new CampaignInfo(Long.valueOf(currentCampaignId), Long.valueOf(currentEngagementId),
+                        CampaignInfo campaign = new CampaignInfo(Long.valueOf(currentCampaignId), Long.valueOf(currentEngagementId),
                                 currentEngagementContextId, currentSessionId, currentVisitorId);
-                        // Log
-                        Log.d(TAG, "Campaign :: " + campaign);
+                        initFragment(campaign);
                     } catch (BadArgumentException e){
-                        // Log Error
-                        Log.d(TAG, "Error Creating Campaign :: " + e.getLocalizedMessage());
+                        initFragment(null);
                     }
                 } else {
                     // Log Error
-                    Log.d(TAG, "No Engagement found");
+                    initFragment(null);
                 }
             }
 
             @Override
             public void onError(MonitoringErrorType monitoringErrorType, Exception e) {
-                // Log Error
-                Log.d(TAG, "Error Getting Engagement :: " + e);
-                Log.d(TAG, "Error Getting Engagement :: " + monitoringErrorType);
+                initFragment(null);
             }
         });
     }
@@ -330,15 +320,15 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         String newAPP;
         if(extras != null) {
             newAPP= extras.getString("EXTRA_APPID");
-    
-            LivePerson.initialize(getApplicationContext(), new InitLivePersonProperties(newAPP, AppID, new InitLivePersonCallBack() {
+            MonitoringInitParams monitoringParams = new MonitoringInitParams("443bc965-320f-402b-92ce-3a79cf831267");
+            LivePerson.initialize(getApplicationContext(), new InitLivePersonProperties(newAPP, AppID, monitoringParams, new InitLivePersonCallBack() {
 
                 @Override
                 public void onInitSucceed() {
                     Log.i("HAN_NGUYEN", "Liverperson SDK Initialized" + LivePerson.getSDKVersion());
                     setUserProfile();
                     initEngagementAttributes();
-                    initFragment();
+                   // initFragment();
                 }
     
                 @Override

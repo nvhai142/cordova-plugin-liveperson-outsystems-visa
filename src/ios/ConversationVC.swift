@@ -48,7 +48,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     
     func configUI() {
         self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.navigationBar.barTintColor = UIColor.userBubbleBackgroundColor
+        self.navigationController?.navigationBar.barTintColor = UIColor.csatNavigationBackgroundColor
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white];
         self.title = "CHAT"
@@ -71,16 +71,6 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         configUI.remoteUserBubbleTimestampColor = UIColor.remoteUserBubbleTimestampColor
         configUI.remoteUserTypingTintColor = UIColor.remoteUserTypingTintColor
         configUI.remoteUserBubbleLongPressOverlayColor = UIColor.remoteUserBubbleLongPressOverlayColor
-
-        configUI.userBubbleBackgroundColor =  UIColor.userBubbleBackgroundColor
-        configUI.userBubbleBorderColor =  UIColor.userBubbleBorderColor
-        configUI.userBubbleLinkColor =  UIColor.userBubbleLinkColor
-        configUI.userBubbleTextColor =  UIColor.userBubbleTextColor
-        configUI.userBubbleTimestampColor =   UIColor.userBubbleTimestampColor
-        configUI.userBubbleSendStatusTextColor =  UIColor.userBubbleSendStatusTextColor
-        configUI.userBubbleErrorTextColor =  UIColor.userBubbleErrorTextColor
-        configUI.userBubbleErrorBorderColor =  UIColor.userBubbleErrorBorderColor
-        configUI.userBubbleLongPressOverlayColor =  UIColor.userBubbleLongPressOverlayColor
 
         configUI.linkPreviewBackgroundColor = UIColor.linkPreviewBackgroundColor
         configUI.linkPreviewTitleTextColor = UIColor.linkPreviewTitleTextColor

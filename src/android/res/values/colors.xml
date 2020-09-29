@@ -53,17 +53,17 @@
 
 <color name="dim_gray">#636363</color>
 
-<color name="aqua_haze">#D7D8D6</color>
+<color name="aqua_haze">#AF000E</color>
 
 <color name="light_gray">#C1C1C1</color>
 
 <color name="rose_gold">#F0E2D4</color>
 
-<color name="emerald_green">#00CA3D</color>
+<color name="emerald_green">#152B55</color>
 
 <color name="pci_description">@color/color_separator</color>
 
-<color name="enable_btn">@color/emerald_green</color>
+<color name="enable_btn">@color/blue_sapphire</color>
 
 <color name="preference_line">#263748</color>
 
@@ -73,7 +73,7 @@
 
 <color name="switch_color_normal">#f0efeb</color>
 
-<color name="switch_color_selected">#00CA3D</color>
+<color name="switch_color_selected">#152B55</color>
 
 <color name="switch_color_label">#000000</color>
 
