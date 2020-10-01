@@ -34,7 +34,7 @@ extension UIColor{
     static let linkPreviewBackgroundColor = UIColor(hex: "#152B55")
     static let linkPreviewTitleTextColor = UIColor(hex: "#FFFFFF")
     static let linkPreviewDescriptionTextColor = UIColor(hex: "#F5F5F5")
-    static let linkPreviewSiteNameTextColor = UIColor(hex: "#767676")
+    static let linkPreviewSiteNameTextColor = UIColor(hex: "#F5F5F5")
 
     static let urlRealTimePreviewBackgroundColor = UIColor(hex: "#FFFFFF")
     static let urlRealTimePreviewBorderColor = UIColor(hex: "#C1C1C1")
@@ -48,13 +48,13 @@ extension UIColor{
     static let photosharingMenuButtonsTextColor = UIColor(hex: "#152B55")
     static let cameraButtonEnabledColor = UIColor(hex: "#152B55")
     static let cameraButtonDisabledColor = UIColor(hex: "#F5F5F5")
-    static let fileCellLoaderFillColor = UIColor(hex: "#00CA3D")
-    static let fileCellLoaderRingProgressColor = UIColor(hex: "#00CA3D")
+    static let fileCellLoaderFillColor = UIColor(white: 0.0, alpha: 0.5)
+    static let fileCellLoaderRingProgressColor = UIColor(hex: "#D7D8D6")
     static let fileCellLoaderRingBackgroundColor = UIColor(hex: "#FFFFFF")
 
 
     static let sendButtonDisabledColor = UIColor(hex: "#F5F5F5")
-    static let sendButtonEnabledColor = UIColor(hex: "#152B55")
+    static let sendButtonEnabledColor = UIColor(hex: "#00CA3D")
     static let systemBubbleTextColor = UIColor(hex: "#1C1C1C")
 
     static let checkmarkReadColor = UIColor(hex: "#767676")
@@ -66,7 +66,7 @@ extension UIColor{
     static let csatRatingButtonSelectedColor = UIColor(hex: "#FFFFFF")
     static let csatAllTitlesTextColor = UIColor(hex: "#000000")
 
-    static let csatNavigationBackgroundColor = UIColor(hex: "#152B55")
+    static let csatNavigationBackgroundColor = UIColor(hex: "#FFFFFF")
     static let csatNavigationTitleColor = UIColor(hex: "#000000")
     static let csatSkipButtonColor = UIColor(hex: "#000000")
     static let conversationSeparatorTextColor = UIColor(hex: "#767676")
