@@ -128,7 +128,7 @@
     <color name="lp_enter_msg_text">@color/black</color>
     <color name="lp_enter_msg_hint">@color/aqua_haze</color>
     <color name="lp_send_button_text_enable">@color/light_green</color>
-    <color name="lp_send_button_text_disable">@color/pearl_gray</color>
+    <color name="lp_send_button_text_disable">@color/aqua_haze</color>
 
     <bool name="use_send_image_button">true</bool>
 
