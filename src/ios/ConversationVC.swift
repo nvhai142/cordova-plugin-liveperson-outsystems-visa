@@ -93,6 +93,12 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         configUI.isReadReceiptTextMode = false
         configUI.checkmarkVisibility = .sentOnly
         configUI.csatShowSurveyView = false 
+        configUI.sendButtonDisabledColor = UIColor.sendButtonDisabledColor
+        configUI.sendButtonEnabledColor = UIColor.sendButtonEnabledColor
+        configUI.inputTextViewContainerBackgroundColor = UIColor.inputTextViewContainerBackgroundColor
+        configUI.conversationSeparatorTextColor = UIColor.conversationSeparatorTextColor
+        configUI.conversationBackgroundColor = UIColor.conversationBackgroundColor
+        
     }
     
     @IBAction func cancelPressed(sender:Any) {

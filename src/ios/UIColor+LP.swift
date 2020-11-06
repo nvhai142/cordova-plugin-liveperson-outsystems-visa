@@ -77,7 +77,7 @@ extension UIColor{
     static let dateSeparatorLineBackgroundColor = UIColor(hex: "#FFFFFF")
     static let dateSeparatorBackgroundColor = UIColor(hex: "#FFFFFF")
 
-    static let inputTextViewContainerBackgroundColor = UIColor(hex: "#FFFFFF")
+    static let inputTextViewContainerBackgroundColor = UIColor(hex: "#152B55")
 
     static let ttrBannerBackgroundColor = UIColor(hex: "#767676")
     static let ttrBannerTextColor = UIColor(hex: "#FFFFFF")
