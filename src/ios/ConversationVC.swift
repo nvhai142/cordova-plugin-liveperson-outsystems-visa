@@ -47,7 +47,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         //}
     }
     var conversationQuery:ConversationParamProtocol?;
-    var alert = UIAlertController(title: nil, message: "", preferredStyle: .alert)
+    var alert = UIAlertController(title: nil, message: "Loading...", preferredStyle: .alert)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +58,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
 
         let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
         loadingIndicator.hidesWhenStopped = true
-        loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
+        loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.medium
         loadingIndicator.color = .gray
         loadingIndicator.startAnimating();
 
