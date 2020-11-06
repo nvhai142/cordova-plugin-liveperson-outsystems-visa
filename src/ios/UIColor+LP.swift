@@ -42,11 +42,11 @@ extension UIColor{
     static let urlRealTimePreviewTitleTextColor = UIColor(hex: "#767676")
     static let urlRealTimePreviewDescriptionTextColor = UIColor(hex: "#767676")
 
-    static let photosharingMenuBackgroundColor = UIColor(hex: "#C1C1C1")
+    static let photosharingMenuBackgroundColor = UIColor(hex: "#152B55")
     static let photosharingMenuButtonsBackgroundColor = UIColor(hex: "#D7D8D6")
     static let photosharingMenuButtonsTintColor = UIColor(hex: "#D7D8D6")
     static let photosharingMenuButtonsTextColor = UIColor(hex: "#636363")
-    static let cameraButtonEnabledColor = UIColor(hex: "#00CA3D")
+    static let cameraButtonEnabledColor = UIColor(hex: "#FFFFFF")
     static let cameraButtonDisabledColor = UIColor(hex: "#636363")
     static let fileCellLoaderFillColor = UIColor(hex: "#00CA3D")
     static let fileCellLoaderRingProgressColor = UIColor(hex: "#00CA3D")
@@ -54,7 +54,7 @@ extension UIColor{
 
 
     static let sendButtonDisabledColor = UIColor(hex: "#636363")
-    static let sendButtonEnabledColor = UIColor(hex: "#00CA3D")
+    static let sendButtonEnabledColor = UIColor(hex: "#FFFFFF")
     static let systemBubbleTextColor = UIColor(hex: "#1C1C1C")
 
     static let checkmarkReadColor = UIColor(hex: " #152B55")
