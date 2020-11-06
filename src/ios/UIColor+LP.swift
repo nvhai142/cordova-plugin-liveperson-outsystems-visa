@@ -13,7 +13,7 @@ extension UIColor{
     
     static let backgroundColor = UIColor(hex: "#FFFFFF")
 
-    static let remoteUserBubbleBackgroundColor = UIColor(hex: "#F0E2D4")
+    static let remoteUserBubbleBackgroundColor = UIColor(hex: "#152B55")
     static let remoteUserBubbleBorderColor = UIColor(hex: "#F0E2D4")
     static let remoteUserBubbleLinkColor = UIColor(hex: "#F0E2D4")
     static let remoteUserBubbleTextColor = UIColor(hex: "#636363")
