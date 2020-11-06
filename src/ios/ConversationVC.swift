@@ -17,15 +17,21 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     }
     
     func LPMessagingSDKAuthenticationFailed(_ error: NSError) {
-        
+        DispatchQueue.main.async {
+                self.alert.dismiss(animated: true, completion: nil)
+            }
     }
     
     func LPMessagingSDKTokenExpired(_ brandID: String) {
-        
+        DispatchQueue.main.async {
+                self.alert.dismiss(animated: true, completion: nil)
+            }
     }
     
     func LPMessagingSDKError(_ error: NSError) {
-        
+        DispatchQueue.main.async {
+                self.alert.dismiss(animated: true, completion: nil)
+            }
     }
     
     func LPMessagingSDKAgentDetails(_ agent: LPUser?) {
@@ -33,15 +39,30 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
             self.title = (user.nickName ?? "CHAT")
         }
     }
-
+    func LPMessagingSDKConnectionStateChanged(_ isReady: Bool, brandID: String) {
+       // if(isReady){
+            DispatchQueue.main.async {
+                self.alert.dismiss(animated: true, completion: nil)
+            }
+        //}
+    }
     var conversationQuery:ConversationParamProtocol?;
-    
+    var alert = UIAlertController(title: nil, message: "Loading...", preferredStyle: .alert)
+
     override func viewDidLoad() {
         super.viewDidLoad()
         LPMessagingSDK.instance.delegate = self
         let campaignInfo = LPCampaignInfo(campaignId: 1244787870, engagementId: 1246064870, contextId: nil)
         self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery("47817293", campaignInfo: campaignInfo)
         self.configUI()
+
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.style = UIActivityIndicatorView.Style.gray
+        loadingIndicator.startAnimating();
+
+        alert.view.addSubview(loadingIndicator)
+        present(alert, animated: true, completion: nil)
     }
 
     
