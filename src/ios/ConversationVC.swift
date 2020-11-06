@@ -50,7 +50,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.navigationBar.barTintColor = UIColor.csatNavigationBackgroundColor
         self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white];
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black];
         self.title = "CHAT"
         
         let configUI = LPConfig.defaultConfiguration
@@ -98,7 +98,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         configUI.inputTextViewContainerBackgroundColor = UIColor.inputTextViewContainerBackgroundColor
         configUI.conversationSeparatorTextColor = UIColor.conversationSeparatorTextColor
         configUI.conversationBackgroundColor = UIColor.conversationBackgroundColor
-        
+
     }
     
     @IBAction func cancelPressed(sender:Any) {
