@@ -69,10 +69,10 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     
     
     func configUI() {
-        self.navigationController?.navigationBar.tintColor = UIColor.black
+        self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.navigationBar.barTintColor = UIColor.csatNavigationBackgroundColor
         self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black];
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white];
         self.title = "CHAT"
         
         let configUI = LPConfig.defaultConfiguration
