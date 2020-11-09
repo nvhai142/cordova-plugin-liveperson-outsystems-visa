@@ -86,7 +86,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         configUI.userBubbleErrorBorderColor = UIColor.userBubbleErrorBorderColor
         configUI.userBubbleLongPressOverlayColor = UIColor.userBubbleLongPressOverlayColor
 
-
+        configUI.remoteUserBubbleBackgroundColor = UIColor.remoteUserBubbleBackgroundColor
         configUI.remoteUserBubbleBorderColor = UIColor.remoteUserBubbleBorderColor
         configUI.remoteUserBubbleLinkColor = UIColor.remoteUserBubbleLinkColor
         configUI.remoteUserBubbleTextColor = UIColor.remoteUserBubbleTextColor
