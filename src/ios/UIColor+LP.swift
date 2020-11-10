@@ -13,7 +13,7 @@ extension UIColor{
     
     static let backgroundColor = UIColor(hex: "#FFFFFF")
 
-    static let remoteUserBubbleBackgroundColor = UIColor(hex: "#152B55")
+    static let remoteUserBubbleBackgroundColor = UIColor(hex: "#F0E2D4")
     static let remoteUserBubbleBorderColor = UIColor(hex: "#F0E2D4")
     static let remoteUserBubbleLinkColor = UIColor(hex: "#F0E2D4")
     static let remoteUserBubbleTextColor = UIColor(hex: "#636363")
@@ -43,9 +43,9 @@ extension UIColor{
     static let urlRealTimePreviewDescriptionTextColor = UIColor(hex: "#767676")
 
     static let photosharingMenuBackgroundColor = UIColor(hex: "#152B55")
-    static let photosharingMenuButtonsBackgroundColor = UIColor(hex: "#D7D8D6")
-    static let photosharingMenuButtonsTintColor = UIColor(hex: "#D7D8D6")
-    static let photosharingMenuButtonsTextColor = UIColor(hex: "#636363")
+    static let photosharingMenuButtonsBackgroundColor = UIColor(hex: "#FFFFFF")
+    static let photosharingMenuButtonsTintColor = UIColor(hex: "#152B55")
+    static let photosharingMenuButtonsTextColor = UIColor(hex: "#FFFFFF")
     static let cameraButtonEnabledColor = UIColor(hex: "#FFFFFF")
     static let cameraButtonDisabledColor = UIColor(hex: "#636363")
     static let fileCellLoaderFillColor = UIColor(hex: "#00CA3D")
@@ -66,7 +66,7 @@ extension UIColor{
     static let csatRatingButtonSelectedColor = UIColor(hex: "#FFFFFF")
     static let csatAllTitlesTextColor = UIColor(hex: "#000000")
 
-    static let csatNavigationBackgroundColor = UIColor(hex: "#FFFFFF")
+    static let csatNavigationBackgroundColor = UIColor(hex: "#152B55")
     static let csatNavigationTitleColor = UIColor(hex: "#000000")
     static let csatSkipButtonColor = UIColor(hex: "#000000")
     static let conversationSeparatorTextColor = UIColor(hex: "#1C1C1C")
