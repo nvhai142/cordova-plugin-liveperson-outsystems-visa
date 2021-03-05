@@ -379,19 +379,22 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     // Try-Catch Block
                     try {
                         // Create Campaign Object
-                        CampaignInfo campaign = new CampaignInfo(Long.valueOf(currentCampaignId), Long.valueOf(currentEngagementId),
-                                currentEngagementContextId, currentSessionId, currentVisitorId);
-                        initFragment(campaign);
-                    } catch (Exception  e){
                         CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
                                 null, null, null);
                         initFragment(campaign);
+                    } catch (Exception  e){
+                        initFragment(null);
                     }
                 } else {
                     // Log Error
-                    CampaignInfo campaign = new CampaignInfo(3069951530L, 3069951830L,
+                    try {
+                        // Create Campaign Object
+                        CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
                                 null, null, null);
-                    initFragment(campaign);
+                        initFragment(campaign);
+                    } catch (Exception  e){
+                        initFragment(null);
+                    }
                 }
             }
 
