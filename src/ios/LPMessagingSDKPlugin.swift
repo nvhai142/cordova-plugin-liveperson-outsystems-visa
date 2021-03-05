@@ -582,7 +582,7 @@ extension String {
                 "type": "ctmrinfo"
             ]
         ]
-            getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
+           // getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
 
                             let campaignInfo = LPCampaignInfo(campaignId: 3069951530, engagementId: 3069951830, contextId: nil, sessionId: nil, visitorId: nil)
 
@@ -653,7 +653,7 @@ extension String {
                                 LPMessagingSDK.instance.showConversation(conversationViewParams, authenticationParams: authenticationParams)
                             }
                        // }
-            }
+            //}
             
         }
         
