@@ -383,11 +383,15 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                                 currentEngagementContextId, currentSessionId, currentVisitorId);
                         initFragment(campaign);
                     } catch (Exception  e){
-                        initFragment(null);
+                        CampaignInfo campaign = new CampaignInfo(3069951530, 3069951830,
+                                null, null, null);
+                        initFragment(campaign);
                     }
                 } else {
                     // Log Error
-                    initFragment(null);
+                    CampaignInfo campaign = new CampaignInfo(3069951530, 3069951830,
+                                null, null, null);
+                    initFragment(campaign);
                 }
             }
 
