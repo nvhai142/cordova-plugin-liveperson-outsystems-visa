@@ -10,9 +10,9 @@
 
     <!-- brand bubble-->
     <dimen name="brand_bubble_stroke_width">0dp</dimen>
-    <color name="brand_bubble_stroke_color">@color/light_gray</color>
+    <color name="brand_bubble_stroke_color">@color/rose_gold</color>
     <color name="brand_bubble_message_text_color">@color/dim_gray</color>
-    <color name="brand_bubble_message_link_text_color">@color/blue_sapphire</color>
+    <color name="brand_bubble_message_link_text_color">@color/color_text_white</color>
     <color name="brand_bubble_timestamp_text_color">@color/dim_gray</color>
     <color name="brand_bubble_background_color">@color/rose_gold</color>
     <color name="brand_logo_background_color">@color/pearl_gray</color>
@@ -22,7 +22,7 @@
     <dimen name="agent_bubble_stroke_width">0dp</dimen>
     <color name="agent_bubble_stroke_color">@color/rose_gold</color>
     <color name="agent_bubble_message_text_color">@color/dim_gray</color>
-    <color name="agent_bubble_message_link_text_color">@color/blue_sapphire</color>
+    <color name="agent_bubble_message_link_text_color">@color/color_text_white</color>
     <color name="agent_bubble_timestamp_text_color">@color/dim_gray</color>
     <color name="agent_bubble_background_color">@color/rose_gold</color>
     <color name="agent_avatar_background_color">@color/pearl_gray</color>
@@ -33,10 +33,10 @@
     <dimen name="consumer_bubble_stroke_width">0dp</dimen>
     <color name="consumer_bubble_stroke_color">@color/pearl_gray</color>-->
     <color name="consumer_bubble_message_text_color">@color/white</color>
-    <color name="consumer_bubble_message_link_text_color">@color/blue_sapphire</color>
+    <color name="consumer_bubble_message_link_text_color">@color/white</color>
     <color name="consumer_bubble_timestamp_text_color">@color/dim_gray</color>
-    <color name="consumer_bubble_background_color">@color/blue_sapphire</color>
-    <color name="consumer_bubble_state_text_color">@color/black</color>
+    <color name="consumer_bubble_background_color">@color/color_background_user</color>
+    <color name="consumer_bubble_state_text_color">@color/dim_gray</color>
 
 
     <!-- system bubble-->
@@ -126,9 +126,9 @@
     <!--Edit Text-->
     <color name="edit_text_underline_color">@color/blue_sapphire</color>
     <color name="lp_enter_msg_text">@color/black</color>
-    <color name="lp_enter_msg_hint">@color/aqua_haze</color>
-    <color name="lp_send_button_text_enable">@color/light_green</color>
-    <color name="lp_send_button_text_disable">@color/aqua_haze</color>
+    <color name="lp_enter_msg_hint">@color/color_disable</color>
+    <color name="lp_send_button_text_enable">@color/blue_sapphire</color>
+    <color name="lp_send_button_text_disable">@color/color_disable</color>
 
     <bool name="use_send_image_button">true</bool>
 
@@ -209,8 +209,10 @@
     <color name="agent_bubble_pci_form_invitation_background_color">@android:color/white</color>
     <color name="agent_bubble_pci_form_invitation_background_btn_color">@android:color/white</color>
     <color name="agent_bubble_pci_form_invitation_stroke_color">@color/aqua_haze</color>
-    <color name="agent_bubble_pci_form_invitation_button_text_color">@color/blue_sapphire</color>
-    <color name="agent_bubble_pci_form_invitation_description_text_color">@color/pci_description</color>
+    <color name="agent_bubble_pci_form_invitation_button_text_color">@color/blue_sapphire
+    </color>
+    <color name="agent_bubble_pci_form_invitation_description_text_color">@color/pci_description
+    </color>
     <color name="agent_bubble_pci_form_invitation_title_text_color">@color/black</color>
     <color name="agent_bubble_pci_form_invitation_icon_tint_color">@color/blue_sapphire</color>
 

@@ -16,7 +16,7 @@
 
 <color name="color_divider">#585B5A</color>
 
-<color name="color_separator">#1C1C1C</color>
+<color name="color_separator">#163049</color>
 
 <color name="edit_text_hint_color">#D7D8D6</color>
 
@@ -47,8 +47,6 @@
 
 <color name="blue_sapphire">#152B55</color>
 
-<color name="light_green">#00CA3D</color>
-
 <color name="light_blue">#ADD8E6</color>
 
 <color name="pearl_gray">#F5F5F5</color>
@@ -59,7 +57,7 @@
 
 <color name="light_gray">#C1C1C1</color>
 
-<color name="rose_gold">#F0E2D4</color>
+<color name="rose_gold">#CAD1D6</color>
 
 <color name="emerald_green">#152B55</color>
 
@@ -84,5 +82,7 @@
 <color name="btn_bottom_sheet_text">@color/white</color>
 
 <color name="color_text">#9B9B9B</color>
-
+<color name="color_disable">#D3D3D3</color>
+<color name="color_text_user">#FFFFFF</color>
+<color name="color_background_user">#54606C</color>
 </resources>

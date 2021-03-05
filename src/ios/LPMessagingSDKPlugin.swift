@@ -11,7 +11,6 @@ import LPMessagingSDK
 import LPInfra
 import LPAMS
 import LPMonitoring
-
 extension String {
     
     /// Create `Data` from hexadecimal string representation
@@ -37,7 +36,9 @@ extension String {
     
 }
 
-@objc(LPMessagingSDKPlugin) class LPMessagingSDKPlugin: CDVPlugin, LPMessagingSDKdelegate {
+@objc(LPMessagingSDKPlugin) class LPMessagingSDKPlugin: CDVPlugin, ConversationDelegate {
+    
+    var conversationScreen : ConversationVC?
     
     var conversationQuery: ConversationParamProtocol?
 
@@ -68,11 +69,15 @@ extension String {
             print("Can't init without brandID")
             return
         }
+        guard let appInstallID = command.arguments[2] as? String else {
+            print("Can't init without AppInstallID")
+            return
+        }
         self.lpAccountNumber = lpAccountNumber
         
         print("lpMessagingSdkInit brandID --> \(lpAccountNumber)")
         
-        let monitoringInitParams = LPMonitoringInitParams(appInstallID: "443bc965-320f-402b-92ce-3a79cf831267")
+        let monitoringInitParams = LPMonitoringInitParams(appInstallID: appInstallID)
 
         do {
             try LPMessagingSDK.instance.initialize(lpAccountNumber, monitoringInitParams: monitoringInitParams)
@@ -162,27 +167,44 @@ extension String {
         print("@@@ tokenAsData \(tokenAsData)")
         
         print("@@@ string as 8 character chunks ... \(result)")
-        print("@@@ tokenAsString --> \(tokenAsString)" ) 
+        print("@@@ tokenAsString --> \(tokenAsString)" )
         
         return tokenAsData
     }
     
     @objc(close_conversation_screen:)
     func close_conversation_screen(command:CDVInvokedUrlCommand) {
-        self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery(self.lpAccountNumber!)
-        if self.conversationQuery != nil {
-            LPMessagingSDK.instance.removeConversation(self.conversationQuery!)
-            self.viewController.navigationController?.popViewController(animated: true)
-            print("@@@ iOS ... LPMessagingSDK  close_conversation_screen:")
-            var response:[String:String];
-            response = ["eventName":"LPMessagingSDKCloseConversationScreen"];
-            let jsonString = self.convertDicToJSON(dic: response)
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs:jsonString)
-            pluginResult?.setKeepCallbackAs(true)
-            self.globalCallbackCommandDelegate?.send(pluginResult, callbackId: self.globalCallbackCommand?.callbackId)
-            
-        }
+        // self.globalCallbackCommand = command
+//        if let query = self.conversationQuery {
+//            let isChatActive = LPMessagingSDK.instance.checkActiveConversation(query)
+//            if(isChatActive){
+//                LPMessagingSDK.instance.resolveConversation(query)
+//            }
+//            
+//        }
+        
+        conversationScreen?.closeChat()
 
+        var response:[String:String];
+        
+        response = ["eventName":"LPMessagingSDKCloseConversationScreen"];
+        let jsonString = self.convertDicToJSON(dic: response)
+        
+        self.set_lp_callbacks(command: command)
+        
+        let pluginResult = CDVPluginResult(
+            status: CDVCommandStatus_OK,
+            messageAs: jsonString
+        )
+
+        pluginResult?.setKeepCallbackAs(true)
+        self.callBackCommandDelegate?.send(pluginResult, callbackId: self.callBackCommand?.callbackId)
+        // var response:[String:String];
+        // response = ["eventName":"LPMessagingSDKCloseConversationScreen"];
+        // let jsonString = self.convertDicToJSON(dic: response)
+        // let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs:jsonString)
+        // pluginResult?.setKeepCallbackAs(true)
+        // self.globalCallbackCommand?.send(pluginResult, callbackId: self.globalCallbackCommand?.callbackId)
     }
     
     @objc(register_pusher:)
@@ -341,8 +363,40 @@ extension String {
         let ctype = command.arguments[9] as? String ?? ""
         let storedNumber = command.arguments[10] as? String ?? ""
         let entrypoint = command.arguments[11] as? String ?? ""
+        let firstName = command.arguments[12] as? String ?? ""
+        let lastName = command.arguments[13] as? String ?? ""
+        let age = command.arguments[14] as? String ?? ""
+        let year = command.arguments[15] as? String ?? ""
+        let month = command.arguments[16] as? String ?? ""
+        let day = command.arguments[17] as? String ?? ""
+        let email = command.arguments[18] as? String ?? ""
+        let phone = command.arguments[19] as? String ?? ""
+        let gender = command.arguments[20] as? String ?? ""
+        let company = command.arguments[21] as? String ?? ""
+        let userName = command.arguments[22] as? String ?? ""
 
-        self.showConversation(brandID: brandID,authenticationCode: token, partyID: partyID,country: country,region: region,language: language,zipcode: zipcode,accountName: accountName,customerID: customerID,ctype: ctype,storedNumber: storedNumber,entrypoint: entrypoint)
+        let WelcomeMsg = command.arguments[24] as? String ?? "How can I help you today?"
+        let ClearConversationMsg = command.arguments[26] as? String ?? "All of your existing conversation history will be lost. Are you sure?"
+        let ClearConfirmMsg = command.arguments[27] as? String ?? "Please resolve the conversation first."
+        let ChooseMsg = command.arguments[28] as? String ?? "Choose an option"
+        let RevolvedTileMsg = command.arguments[29] as? String ?? "Resolve the conversation"
+        let ResolvedConfirmMsg = command.arguments[30] as? String ?? "Are you sure this topic is resolved?"
+        let ClearTitleMsg = command.arguments[31] as? String ?? "Clear Conversation"
+        let YesMsg = command.arguments[32] as? String ?? "Yes"
+        let CancelMsg = command.arguments[33] as? String ?? "Cancel"
+        let ClearMsg = command.arguments[34] as? String ?? "Clear"
+        let MenuMsg = command.arguments[35] as? String ?? "Menu"
+        let ChatTitleHeader = command.arguments[25] as? String ?? "Visa Concierge"
+
+        let ButtonOpt1Msg = command.arguments[36] as? String ?? "Card Billing / Loyalty"
+        let ButtonOpt1Value = command.arguments[37] as? String ?? "Card Billing / Loyalty"
+        let ButtonOpt2Msg = command.arguments[38] as? String ?? "Visa Concierge"
+        let ButtonOpt2Value = command.arguments[39] as? String ?? "Visa Concierge"
+
+        let LanguageChat = command.arguments[40] as? String ?? "en-UK"
+        let LoadingMsg = command.arguments[41] as? String ?? "Loading..."
+
+        self.showConversation(brandID: brandID,authenticationCode: token, partyID: partyID,country: country,region: region,language: language,zipcode: zipcode,accountName: accountName,customerID: customerID,ctype: ctype,storedNumber: storedNumber,entrypoint: entrypoint,firstName: firstName,lastName: lastName,age: age,year: year,month: month,day: day,email: email,phone: phone,gender: gender,company: company,userName: userName,WelcomeMsg: WelcomeMsg,ClearConversationMsg: ClearConversationMsg,ClearConfirmMsg: ClearConfirmMsg,ChooseMsg: ChooseMsg,RevolvedTileMsg: RevolvedTileMsg,ResolvedConfirmMsg: ResolvedConfirmMsg,ClearTitleMsg: ClearTitleMsg,YesMsg: YesMsg,CancelMsg: CancelMsg,ClearMsg: ClearMsg,MenuMsg: MenuMsg,ChatTitleHeader: ChatTitleHeader,ButtonOpt1Msg: ButtonOpt1Msg,ButtonOpt1Value: ButtonOpt1Value,ButtonOpt2Msg: ButtonOpt2Msg,ButtonOpt2Value: ButtonOpt2Value,LanguageChat: LanguageChat,LoadingMsg: LoadingMsg)
 
         
         var response:[String:String];
@@ -368,7 +422,6 @@ extension String {
         
         self.callBackCommandDelegate = commandDelegate
         self.callBackCommand = command
-        LPMessagingSDK.instance.delegate = self
 
     }
     
@@ -460,24 +513,55 @@ extension String {
             return nil
         }
     }
-    func showConversation(brandID: String, authenticationCode:String? = nil, partyID:String? = nil, country:String? = nil,region:String? = nil,language:String? = nil,zipcode: String? = nil,accountName: String? = nil,customerID: String? = nil,ctype: String? = nil,storedNumber: String? = nil,entrypoint: String? = nil) {
+    func showConversation(brandID: String, authenticationCode:String? = nil, partyID:String? = nil, country:String? = nil,region:String? = nil,language:String? = nil,zipcode: String? = nil,accountName: String? = nil,customerID: String? = nil,ctype: String? = nil,storedNumber: String? = nil,entrypoint: String? = nil,firstName: String? = nil,lastName: String? = nil,age: String? = nil,year: String? = nil,month: String? = nil,day: String? = nil,email: String? = nil,phone: String? = nil,gender: String? = nil,company: String? = nil,userName: String? = nil,WelcomeMsg: String? = nil,ClearConversationMsg: String? = nil,ClearConfirmMsg: String? = nil,ChooseMsg: String? = nil,RevolvedTileMsg: String? = nil,ResolvedConfirmMsg: String? = nil,ClearTitleMsg: String? = nil,YesMsg: String? = nil,CancelMsg: String? = nil,ClearMsg: String? = nil,MenuMsg: String? = nil,ChatTitleHeader: String? = nil,ButtonOpt1Msg: String? = nil,ButtonOpt1Value: String? = nil,ButtonOpt2Msg: String? = nil,ButtonOpt2Value: String? = nil,LanguageChat: String? = nil,LoadingMsg: String? = nil) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let chatVC = storyboard.instantiateViewController(withIdentifier: "ConversationNavigationVC") as? UINavigationController {
             chatVC.modalPresentationStyle = .fullScreen
+            if let conversationVCs = chatVC.viewControllers.first as? ConversationVC {
+                conversationScreen = conversationVCs
+                conversationVCs.delegate = self
+                conversationVCs.conversationQuery = self.conversationQuery
+                if let cgate = ChatTitleHeader{
+                    conversationVCs.ChatTitleHeader = cgate
+                }
+                if let langs = LanguageChat{
+                    conversationVCs.LanguageAPP = langs
+                }
+                if let welm = WelcomeMsg{
+                    conversationVCs.WelcomeMsg = welm
+                }
+                if let loads = LoadingMsg{
+                    conversationVCs.LoadingMsg = loads
+                }
+            }
+
             self.viewController.present(chatVC, animated: true, completion: nil)
-            
-            let entryPoints = ["http://www.liveperson-test.com",
-                           "sec://\(entrypoint)",
-                           "lang://En"]
+            var enp = ""
+            if let entryp = entrypoint{
+                enp = entryp
+            }
+            let entryPoints = ["http://www.liveperson-test.com",enp,"lang://En"]
 
             let engagementAttributes = [
             [
                 "type": "personal",
                 "personal": [
                     "language": language,
+                    "company": company,
+                    "gender": gender,
+                    "firstname": firstName, // FIRST NAME
+                    "lastname": lastName, // SURNAME
+                    "age": [
+                        "age": age, // AGE AS INTEGER
+                        "year": year, // BIRTH YEAR
+                        "month": month, // BIRTH MONTH
+                        "day": day // BIRTH DAY
+                    ],
                     "contacts": [
                         [
+                            "email": email,
+                            "phone": phone,
                             "address": [
                                 "country": country,
                                 "region": region
@@ -492,19 +576,76 @@ extension String {
                     "accountName": accountName,
                     "customerId": customerID,
                     "storeNumber": storedNumber,
-                    "ctype": ctype
+                    "ctype": ctype,
+                    "userName": userName
                 ],
                 "type": "ctmrinfo"
             ]
         ]
             getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
-                       // self.sendSDEwith(entryPoints: entryPoints, engagementAttributes: engagementAttributes, pageID: pageID) {
-                          // let campaignInfo = LPCampaignInfo(campaignId: 1244787870, engagementId: 1246064870, contextId: nil)
+
                             self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery(brandID, campaignInfo: campInfo)
+                            if let conversationVC = chatVC.viewControllers.first as? ConversationVC {
+                                conversationVC.conversationQuery = self.conversationQuery
+                                //conversationVC.alert.dismiss(animated: true, completion: nil)
+
+                                if let chdcm = ClearConversationMsg{
+                                    conversationVC.ClearConversationMsg = chdcm
+                                }
+                                if let chooscm = ClearConfirmMsg{
+                                    conversationVC.ClearConfirmMsg = chooscm
+                                }
+                                if let choosm = ChooseMsg{
+                                    conversationVC.ChooseMsg = choosm
+                                }
+                                if let restm = RevolvedTileMsg{
+                                    conversationVC.RevolvedTileMsg = restm
+                                }
+                                if let resm = ResolvedConfirmMsg{
+                                    conversationVC.ResolvedConfirmMsg = resm
+                                }
+                                if let cleartm = ClearTitleMsg{
+                                    conversationVC.ClearTitleMsg = cleartm
+                                }
+                                if let yesm = YesMsg{
+                                    conversationVC.YesMsg = yesm
+                                }
+                                if let cancelm = CancelMsg{
+                                    conversationVC.CancelMsg = cancelm
+                                }
+                                if let clearm = ClearMsg{
+                                    conversationVC.ClearMsg = clearm
+                                }
+                                if let menuM = MenuMsg {
+                                    conversationVC.MenuMsg = menuM
+                                }
+                                                            }
                             if authenticationCode == nil {
                                 LPMessagingSDK.instance.showConversation(self.conversationQuery!)
                             } else {
+                                //let welcomeMessageParam = LPWelcomeMessage(message: WelcomeMsg, frequency: .everyConversation)
 
+                                var Button1Msg = ""
+                                var Button1Value = ""
+                                var Button2Msg = ""
+                                var Button2Value = ""
+
+                                if let btn1Msg = ButtonOpt1Msg {
+                                    Button1Msg = btn1Msg
+                                }
+                                if let btn1Value = ButtonOpt1Value {
+                                    Button1Value = btn1Value
+                                }
+                                if let btn2Msg = ButtonOpt2Msg {
+                                    Button2Msg = btn2Msg
+                                }
+                                if let btn2Value = ButtonOpt2Value {
+                                    Button2Value = btn2Value
+                                }
+                                
+
+                                
+                                
                                 let conversationViewParams = LPConversationViewParams(conversationQuery: self.conversationQuery!, containerViewController: chatVC.viewControllers.first, isViewOnly: false)
                                 let authenticationParams = LPAuthenticationParams(authenticationCode: nil, jwt: authenticationCode, redirectURI: nil)
                                 LPMessagingSDK.instance.showConversation(conversationViewParams, authenticationParams: authenticationParams)
@@ -580,7 +721,7 @@ extension String {
             let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs:jsonString)
             
             pluginResult?.setKeepCallbackAs(true)
-            self.globalCallbackCommandDelegate?.send(pluginResult, callbackId: self.globalCallbackCommand?.callbackId)      
+            self.globalCallbackCommandDelegate?.send(pluginResult, callbackId: self.globalCallbackCommand?.callbackId)
         }
         
     }
@@ -754,9 +895,9 @@ extension String {
     
     internal func LPMessagingSDKConversationViewControllerDidDismiss() {
     
-        print("@@@ ios ... LPMessagingSDKConversationViewControllerDidDismiss")
+        print("@@@ ios ... LPMessagingSDKConversationClosed")
         var response:[String:String];
-        response = ["eventName":"LPMessagingSDKConversationViewControllerDidDismiss"];
+        response = ["eventName":"LPMessagingSDKConversationClosed"];
         let jsonString = self.convertDicToJSON(dic: response)
         let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs:jsonString)
         pluginResult?.setKeepCallbackAs(true)
@@ -766,3 +907,4 @@ extension String {
     }
     
 }
+

@@ -4,18 +4,24 @@ package com.liveperson.plugin;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.liveperson.api.LivePersonCallbackImpl;
 import com.liveperson.api.sdk.LPConversationData;
 import com.liveperson.infra.InitLivePersonProperties;
+import com.liveperson.infra.MonitoringInitParams;
 import com.liveperson.infra.callbacks.InitLivePersonCallBack;
 import com.liveperson.messaging.TaskType;
 import com.liveperson.messaging.model.AgentData;
 import com.liveperson.messaging.sdk.api.LivePerson;
 import com.liveperson.messaging.sdk.api.callbacks.LogoutLivePersonCallback;
 import com.liveperson.messaging.sdk.api.model.ConsumerProfile;
+import com.liveperson.infra.auth.LPAuthenticationParams;
+import com.liveperson.infra.auth.LPAuthenticationType;
+import com.liveperson.infra.ICallback;
 
 import org.apache.cordova.*;
 import org.json.JSONArray;
@@ -29,7 +35,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
 
     private static final String TAG = LPMessagingSDKPlugin.class.getSimpleName();
     public String LP_APP_PACKAGE_NAME;
-    String AppID = "com.outsystemsenterprise.aspirelifestylesdev.CosmoMobileApp";
+    //String AppID = "com.outsystemsenterprise.aspirelifestylesdev.CosmoMobileApp";
 
     private static final String INIT = "lp_sdk_init";
     private static final String START_CONVERSATION = "start_lp_conversation";
@@ -49,6 +55,8 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
     CallbackContext mRegisterLpPusherCallbackContext;
     
     JSONArray uProfile;
+    //String AppIdentifier;
+    private String AppInstallationID; 
 
     private CordovaWebView mainWebView;
 
@@ -97,20 +105,39 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 //mCallbackContext = callbackContext;
                 // lp_sdk_init - Call this action inorder to do Messaging SDK init
                 final String accountId = args.getString(0);
+                
+                final String AppId = args.getString(1);
+                final String AppInstall = args.getString(2);
+
+                AppInstallationID = AppInstall;
+                
                 Log.d(TAG, "Messaging SDK: init for account Id: " + accountId);
                 Log.v(TAG, "Messaging SDK VERSION:" + LivePerson.getSDKVersion());
-                initSDK(accountId,callbackContext);
+                initSDK(accountId,AppId,callbackContext);
                 break;
             case CLOSE_CONVERSATION_SCREEN:
                 mCallbackContext = callbackContext;
-                LivePerson.hideConversation(cordova.getActivity());
+
+                // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
+                //     @Override
+                //     public void onSuccess(Boolean aBoolean) {
+                //         LivePerson.resolveConversation();
+                //     }
+        
+                //     @Override
+                //     public void onError(Exception e) {
+                //     }
+                // });
+
+                ChatActivity.fa.finish();
+
                 Log.d(TAG, CLOSE_CONVERSATION_SCREEN+ " LPMessagingSDKConversationScreenClosed " + args);
                 JSONObject jsonCloseConversation = new JSONObject();
                 try {
                     jsonCloseConversation.putOpt("eventName","LPMessagingSDKConversationScreenClosed");
                     mCallbackContext.success(jsonCloseConversation.toString());
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                   
                 }
                 break;
             case CLEAR_HISTORY_AND_LOGOUT:
@@ -124,7 +151,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                             json.putOpt("eventName","LPMessagingSDKClearHistoryAndLogout");
                             mCallbackContext.success(json.toString());
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                           
                         }
 
                     }
@@ -136,7 +163,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                             json.putOpt("eventName","LPMessagingSDKClearHistoryAndLogout");
                             mCallbackContext.error(json.toString());
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            
                         }
 
                     }
@@ -150,9 +177,21 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        {\n" +
                 "        \"type\": \"personal\",\n" +
                 "        \"personal\": {\n" +
+                "        \"gender\": \""+args.getString(20)+"\",\n" +
+                "        \"company\": \""+args.getString(21)+"\",\n" +
                 "        \"language\": \""+args.getString(5)+"\",\n" +
+                "        \"firstname\": \""+args.getString(12)+"\",\n" +
+                "        \"lastname\": \""+args.getString(13)+"\",\n" +
+                "        \"age\": {\n" +
+                "        \"age\": \""+args.getString(14)+"\",\n" +
+                "        \"year\": \""+args.getString(15)+"\",\n" +
+                "        \"month\": \""+args.getString(16)+"\",\n" +
+                "        \"day\": \""+args.getString(17)+"\"\n" +
+                "        },\n" +
                 "        \"contacts\": [\n" +
                 "        {\n" +
+                "        \"email\": \""+args.getString(18)+"\",\n" +
+                "        \"phone\": \""+args.getString(19)+"\",\n" +
                 "        \"address\": {\n" +
                 "        \"country\": \""+args.getString(3)+"\",\n" +
                 "        \"region\": \""+args.getString(4)+"\"\n" +
@@ -167,21 +206,44 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        \"accountName\": \""+args.getString(7)+"\",\n" +
                 "        \"customerId\": \""+args.getString(8)+"\",\n" +
                 "        \"storeNumber\": \""+args.getString(10)+"\",\n" +
-                "        \"ctype\": \""+args.getString(9)+"\"\n" +
+                "        \"ctype\": \""+args.getString(9)+"\",\n" +
+                "        \"userName\": \""+args.getString(22)+"\"\n" +
                 "        },\n" +
                 "        \"type\": \"ctmrinfo\"\n" +
                 "        }\n" +
                 "        ]";
                 
                 String entrypoint = "[\"http://www.liveperson-test.com\",\n" +
-                    "                   \"sec://"+args.getString(11)+"\",\n" +
+                    "                   \""+args.getString(11)+"\",\n" +
                     "                   \"lang://Eng\"]";
 
                 if(!args.isNull(1)) {
                     Log.d(TAG, "Messaging SDK:  startAuthenticatedConversation");
                     String jwt = args.getString(1);
                     String partyID = args.getString(2);
-                    startAuthenticatedConversation(appIDs,jwt,partyID,engagement,entrypoint);
+                    String AppIdentifier = args.getString(23);
+
+                    String WelcomeMsg = args.getString(24);
+                    String ChatTitleHeader = args.getString(25);
+                    String ClearConversationMsg = args.getString(26);
+                    String ClearConfirmMsg = args.getString(27);
+                    String ChooseMsg = args.getString(28);
+                    String RevolvedTileMsg = args.getString(29);
+                    String ResolvedConfirmMsg = args.getString(30);
+                    String ClearTitleMsg = args.getString(31);
+                    String YesMsg = args.getString(32);
+                    String CancelMsg = args.getString(33);
+                    String ClearMsg = args.getString(34);
+                    String MenuMsg = args.getString(35);
+
+                    String ButtonOpt1Msg = args.getString(36);
+                    String ButtonOpt1Value = args.getString(37);
+                    String ButtonOpt2Msg = args.getString(38);
+                    String ButtonOpt2Value = args.getString(39);
+
+                    String languageApp = args.getString(40);
+
+                    startAuthenticatedConversation(appIDs,jwt,partyID,engagement,entrypoint,AppIdentifier,WelcomeMsg,ChatTitleHeader,ClearConversationMsg,ClearConfirmMsg,ChooseMsg,RevolvedTileMsg,ResolvedConfirmMsg,ClearTitleMsg,YesMsg,CancelMsg,ClearMsg,MenuMsg,ButtonOpt1Msg,ButtonOpt1Value,ButtonOpt2Msg,ButtonOpt2Value,languageApp);
                 } else {
                     Log.d(TAG, "Messaging SDK: Start conversation");
                     String partyID = args.getString(2);
@@ -190,7 +252,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
 
                 break;
             case RECONNECT_WITH_NEW_TOKEN:
-                mGlobalCallbackContext = callbackContext;
+                mCallbackContext = callbackContext;
                 Log.d(TAG, "Messaging SDK: RECONNECT_WITH_NEW_TOKEN"+args.getString(0));
                 reconnect(args.getString(0));
                 break;
@@ -200,7 +262,6 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 setProfile(callbackContext, args);
                 break;
             case LP_REGISTER_PUSHER:
-
 
                 mRegisterLpPusherCallbackContext = callbackContext;
                 final String account = args.getString(0);
@@ -213,7 +274,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     json.put("deviceToken",token);
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    
                 }
                 PluginResult resultLpPusher = new PluginResult(PluginResult.Status.OK, json.toString());
                 resultLpPusher.setKeepCallback(true);
@@ -235,12 +296,15 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
      *
      * @param accountId
      */
-    private void initSDK(final String accountId,org.apache.cordova.CallbackContext cb) {
+    private void initSDK(final String accountId,final String AppID,org.apache.cordova.CallbackContext cb) {
             final org.apache.cordova.CallbackContext callbackContext = cb;
-            cordova.getActivity().setTitle("CHAT");
+
+//            cordova.getActivity().setTitle("CHAT");
+                LivePerson.shutDown();
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    LivePerson.initialize(cordova.getActivity(), new InitLivePersonProperties(accountId, AppID, new InitLivePersonCallBack() {
+                    MonitoringInitParams monitoringParams = new MonitoringInitParams(AppInstallationID);
+                    LivePerson.initialize(cordova.getActivity(), new InitLivePersonProperties(accountId, AppID, monitoringParams, new InitLivePersonCallBack() {
                         @Override
                         public void onInitSucceed() {
                             Log.i(TAG, "@@@ android ... SDK initialize completed successfully");
@@ -251,7 +315,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                             try {
                                 json.put("eventName","LPMessagingSDKInit");
                             } catch (JSONException e1) {
-                                e1.printStackTrace();
+                               
                             }
 
                             cordova.getActivity().runOnUiThread(new Runnable() {
@@ -273,7 +337,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                             try {
                                 json.put("eventName","LPMessagingSDKInit");
                             } catch (JSONException e1) {
-                                e1.printStackTrace();
+                               
                             }
 
                             cordova.getActivity().runOnUiThread(new Runnable() {
@@ -297,9 +361,9 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             json.put("eventName","LPMessagingSDKReconnectWithNewToken");
             json.put("token",jwt);
         } catch (JSONException e1) {
-            e1.printStackTrace();
+            
         }
-        LivePerson.reconnect(jwt);
+        LivePerson.reconnect(new LPAuthenticationParams().setHostAppJWT(jwt));
         PluginResult result = new PluginResult(PluginResult.Status.OK, json.toString());
         result.setKeepCallback(true);
         mCallbackContext.sendPluginResult(result);
@@ -317,7 +381,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                         json.put("eventName","LPMessagingSDKStartConversation");
                         json.put("type","unauthenticated");
                     } catch (JSONException e1) {
-                        e1.printStackTrace();
+                        
                     }
                     try {
                         Context context = cordova.getActivity().getApplicationContext();
@@ -327,6 +391,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                         intent.putExtra("EXTRA_ENGAGEMENT", engagement);
                         intent.putExtra("EXTRA_ENTRYPOINT", entrypoint);
                         intent.putExtra("EXTRA_PROFILE", uProfile.toString());
+                        intent.putExtra("EXTRA_AppInstallationID", AppInstallationID);
                         cordova.getActivity().startActivity(intent);
 
                        // LivePerson.showConversation(cordova.getActivity());
@@ -346,7 +411,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             });
         }
 
-    private void startAuthenticatedConversation(final String appID, final String token, final String partyID, final String engagement, final String entrypoint) {
+    private void startAuthenticatedConversation(final String appID, final String token, final String partyID, final String engagement, final String entrypoint, final String AppIdentifier, final String WelcomeMsg, final String ChatTitleHeader, final String ClearConversationMsg, final String ClearConfirmMsg, final String ChooseMsg, final String RevolvedTileMsg, final String ResolvedConfirmMsg, final String ClearTitleMsg, final String YesMsg, final String CancelMsg, final String ClearMsg, final String MenuMsg, final String ButtonOpt1Msg, final String ButtonOpt1Value, final String ButtonOpt2Msg, final String ButtonOpt2Value, final String languageApp) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -356,7 +421,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     json.put("type","authenticated");
                         
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                    
                 }
 
                 try {
@@ -367,6 +432,28 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     intent.putExtra("EXTRA_PARTYID", partyID);
                     intent.putExtra("EXTRA_ENGAGEMENT", engagement);
                     intent.putExtra("EXTRA_ENTRYPOINT", entrypoint);
+                    intent.putExtra("EXTRA_APPIDENTIFIER", AppIdentifier);
+                    intent.putExtra("EXTRA_LanguageApp", languageApp);
+                    intent.putExtra("EXTRA_AppInstallationID", AppInstallationID);
+
+                    intent.putExtra("EXTRA_WelcomeMsg", WelcomeMsg);
+                    intent.putExtra("EXTRA_ChatTitleHeader", ChatTitleHeader);
+                    intent.putExtra("EXTRA_ClearConversationMsg", ClearConversationMsg);
+                    intent.putExtra("EXTRA_ClearConfirmMsg", ClearConfirmMsg);
+                    intent.putExtra("EXTRA_ChooseMsg", ChooseMsg);
+                    intent.putExtra("EXTRA_RevolvedTileMsg", RevolvedTileMsg);
+                    intent.putExtra("EXTRA_ResolvedConfirmMsg", ResolvedConfirmMsg);
+                    intent.putExtra("EXTRA_ClearTitleMsg", ClearTitleMsg);
+                    intent.putExtra("EXTRA_YesMsg", YesMsg);
+                    intent.putExtra("EXTRA_CancelMsg", CancelMsg);
+                    intent.putExtra("EXTRA_ClearMsg", ClearMsg);
+                    intent.putExtra("EXTRA_MenuMsg", MenuMsg);
+
+                    intent.putExtra("EXTRA_ButtonOpt1Msg", ButtonOpt1Msg);
+                    intent.putExtra("EXTRA_ButtonOpt1Value", ButtonOpt1Value);
+                    intent.putExtra("EXTRA_ButtonOpt2Msg", ButtonOpt2Msg);
+                    intent.putExtra("EXTRA_ButtonOpt2Value", ButtonOpt2Value);
+                    
                     intent.putExtra("EXTRA_PROFILE", uProfile.toString());
                     cordova.getActivity().startActivity(intent);
 
@@ -374,12 +461,12 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     PluginResult result = new PluginResult(PluginResult.Status.OK, json.toString());
                     result.setKeepCallback(true);
                     mCallbackContext.sendPluginResult(result);
-
+                    setCallBack();
                 } catch (Exception e2) {
                     PluginResult result = new PluginResult(PluginResult.Status.ERROR, json.toString());
                     result.setKeepCallback(true);
                     mCallbackContext.sendPluginResult(result);
-
+                    setCallBack();
                 }
             }
         });
@@ -415,7 +502,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
         try {
             json.putOpt("eventName","LPMessagingSDKSetUserProfile");
         } catch (JSONException e) {
-            e.printStackTrace();
+            
             callbackContext.error(e.toString());
         }
         try {
@@ -428,7 +515,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             try {
                 json.putOpt("error",e.toString());
             } catch (JSONException e1) {
-                e.printStackTrace();
+                
                 callbackContext.error(e1.toString());
             }
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, json.toString());
@@ -453,7 +540,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKError");
                     eventJson.put("error",message);
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.ERROR, eventJson.toString());
@@ -468,7 +555,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKTokenExpired");
 
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -484,7 +571,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKConversationStarted");
                     eventJson.put("conversationID",convData.getId());
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -501,7 +588,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("conversationID",convData.getId());
                     eventJson.put("closeReason",convData.getCloseReason());
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -517,7 +604,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKConnectionStateChanged");
                     eventJson.putOpt("connectionState",isConnected);
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                    
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -534,7 +621,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKAgentIsTypingStateChanged");
                     eventJson.put("isTyping",isTyping);
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                    
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -549,7 +636,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKAgentDetails");
                     eventJson.put("agent",agentData.toString());
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -564,7 +651,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKCsatDismissed");
 
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                    
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -573,13 +660,27 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             }
 
             @Override
+            public void onConversationFragmentClosed() {
+                final JSONObject eventJson = new JSONObject();
+                try {
+                    eventJson.put("eventName","LPMessagingSDKConversationClosed");
+
+                } catch (JSONException e1) {
+                    
+                }
+
+                PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
+                result.setKeepCallback(true);
+                mGlobalCallbackContext.sendPluginResult(result);
+            }
+            @Override
             public void onCsatSubmitted(String conversationId) {
                 final JSONObject eventJson = new JSONObject();
                 try {
                     eventJson.put("eventName","LPMessagingSDKConversationCSATDismissedOnSubmission");
                     eventJson.put("conversationId",conversationId);
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -594,7 +695,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKConversationMarkedAsUrgent");
 
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                  
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -609,7 +710,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKConversationMarkedAsNormal");
 
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                    
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -624,7 +725,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKOffHoursStateChanged");
                     eventJson.put("isOffHours",isOfflineHoursOn);
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                    
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());
@@ -639,7 +740,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     eventJson.put("eventName","LPMessagingSDKAgentAvatarTapped");
                     eventJson.put("agent",agentData.toString());
                 } catch (JSONException e1) {
-                    e1.printStackTrace();
+                   
                 }
 
                 PluginResult result = new PluginResult(PluginResult.Status.OK, eventJson.toString());

@@ -10,7 +10,7 @@ import com.liveperson.api.LivePersonIntents;
 import com.liveperson.api.sdk.LPConversationData;
 import com.liveperson.api.sdk.PermissionType;
 import com.liveperson.infra.ICallback;
-import com.liveperson.infra.log.LPMobileLog;
+//import com.liveperson.infra.log.LPMobileLog;
 import com.liveperson.messaging.TaskType;
 import com.liveperson.messaging.model.AgentData;
 import com.liveperson.messaging.sdk.api.LivePerson;
@@ -190,7 +190,7 @@ public class LivepersonIntentHandler {
     }
 
     private void showToast(String message) {
-        LPMobileLog.d(TAG + "_CALLBACK", message);
+       // LPMobileLog.d(TAG + "_CALLBACK", message);
     }
 
     private void onAgentAvatarTapped(AgentData agentData) {

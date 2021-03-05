@@ -2,10 +2,14 @@ package com.liveperson.plugin;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.app.Activity;
+import android.os.CountDownTimer;
 
 import com.liveperson.infra.BadArgumentException;
 import com.liveperson.infra.CampaignInfo;
@@ -28,6 +35,7 @@ import com.liveperson.infra.ConversationViewParams;
 import com.liveperson.infra.ICallback;
 import com.liveperson.infra.InitLivePersonProperties;
 import com.liveperson.infra.auth.LPAuthenticationParams;
+import com.liveperson.infra.auth.LPAuthenticationType;
 import com.liveperson.infra.callbacks.InitLivePersonCallBack;
 import com.liveperson.infra.messaging_ui.fragment.ConversationFragment;
 import com.liveperson.messaging.sdk.api.LivePerson;
@@ -38,6 +46,8 @@ import com.liveperson.monitoring.model.EngagementDetails;
 import com.liveperson.monitoring.model.LPMonitoringIdentity;
 import com.liveperson.monitoring.sdk.MonitoringParams;
 import com.liveperson.infra.MonitoringInitParams;
+import com.liveperson.infra.model.LPWelcomeMessage;
+import com.liveperson.infra.model.MessageOption;
 import com.liveperson.monitoring.sdk.api.LivepersonMonitoring;
 import com.liveperson.monitoring.sdk.callbacks.EngagementCallback;
 import com.liveperson.monitoring.sdk.callbacks.MonitoringErrorType;
@@ -48,7 +58,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by han.nguyen on 20-03-2018.
@@ -59,8 +73,8 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String LIVEPERSON_FRAGMENT = "liveperson_fragment";
     private ConversationFragment mConversationFragment;
-    String BrandID = "47817293";
-    String AppID = "com.outsystemsenterprise.aspirelifestylesdev.CosmoMobileApp";
+    private static String BrandID = "";
+    private static String AppID = "";
 
     private Menu mMenu;
     String package_name ;
@@ -80,9 +94,23 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     CampaignInfo campaign ;
     String partyID;
 
+    public static Activity fa;
+    private long startTime = 15 * 60 * 1000; // 15 MINS IDLE TIME
+    private final long interval = 1 * 1000;
+    private CountDownTimer countDownTimer;
+
+    public static String getBrandID(){
+        return BrandID;
+    }
+    public static String getAppID(){
+        return AppID;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fa =  this;
+
         mDialogHelper = new DialogHelper(this);
         package_name = getApplicationContext().getPackageName();
         appBar = findViewById (getApplication().getResources().getIdentifier("appBar", "id", package_name));
@@ -90,15 +118,75 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         title = findViewById (getApplication().getResources().getIdentifier("title", "id", package_name));
         int layoutResID = getApplication().getResources().getIdentifier("activity_custom", "layout", package_name);
         setContentView(layoutResID);
+
         mIntentsHandler = new LivepersonIntentHandler(ChatActivity.this);
-        setTitle("Chat");
+        String ChatTitleHeader = "";
+        String languageApp = "en-UK";
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            ChatTitleHeader= extras.getString("EXTRA_ChatTitleHeader");
+            languageApp= extras.getString("EXTRA_LanguageApp");
+            setTitle(ChatTitleHeader);
+        } 
+        String[] languages= getLanguage(languageApp);
+        String lang = languages[0];
+        String country = languages[1];
+
+
+        if (TextUtils.isEmpty(lang)) {
+            Log.i(TAG, "createLocale: taking custom locale from edit text.. ");
+            createLocale(lang, country);
+        } else {
+            Log.i(TAG, "createLocale: " + lang + "-null");
+            createLocale(lang, null);
+        }
+
+        initLivePerson();
+
+        countDownTimer = new CountDownTimer(startTime, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                // TODO: restart counter
+                finishChatScreen();
+                // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
+                //     @Override
+                //     public void onSuccess(Boolean aBoolean) {
+                //         if(!aBoolean){
+                //             finishChatScreen();
+                //         }
+                //     }
+        
+                //     @Override
+                //     public void onError(Exception e) {
+                //         finishChatScreen();
+                //     }
+                // });
+            }
+        };
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        countDownTimer.cancel();            
+        countDownTimer.start();
+    }
+    public void showProgressDialog() {
+        mDialogHelper.showProgress();
+    }
+
+    public void dismissProgressDialog() { //CreateNewConciergeCase.View::
+        mDialogHelper.dismissProgress();
     }
 
 
     @Override
     protected void onStart(){
         super.onStart();
-        initLivePerson();
+
        // setUserProfile();
     }
 
@@ -127,7 +215,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
                 LivePerson.setUserProfile(consumerProfile);
             } catch (JSONException e) {
-                e.printStackTrace();
+              
             }
             
         }
@@ -143,31 +231,48 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
 
     private void initFragment(CampaignInfo campaignInfo) {
+        dismissProgressDialog();
+      //  setUserProfile();
         mConversationFragment = (ConversationFragment)getSupportFragmentManager().findFragmentByTag(LIVEPERSON_FRAGMENT);
         Log.d(TAG, "initFragment. mConversationFragment = " + mConversationFragment);
         if (mConversationFragment == null) {
 
             String authCode = "";
             String publicKey = "";
+            String WelcomeMsg = "How can I help you today?";
+            String ButtonOpt1Msg = "";
+            String ButtonOpt1Value = "";
+            String ButtonOpt2Msg = "";
+            String ButtonOpt2Value = "";
 
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
                 authCode= extras.getString("EXTRA_AUTHENTICATE");
+                WelcomeMsg= extras.getString("EXTRA_WelcomeMsg");
+                ButtonOpt1Msg= extras.getString("EXTRA_ButtonOpt1Msg");
+                ButtonOpt1Value= extras.getString("EXTRA_ButtonOpt1Value");
+                ButtonOpt2Msg= extras.getString("EXTRA_ButtonOpt2Msg");
+                ButtonOpt2Value= extras.getString("EXTRA_ButtonOpt2Value");
             }
             Log.d(TAG, "initFragment. authCode = " + authCode);
-            Log.d(TAG, "initFragment. publicKey = " + publicKey);
             LPAuthenticationParams authParams = new LPAuthenticationParams();
             // add new
             ConversationViewParams conversationViewParams = new ConversationViewParams(false);
 
-           
+            Log.d(TAG, "initFragment. publicKey = " + campaignInfo);
+
+            LPWelcomeMessage lpWelcomeMessage = new LPWelcomeMessage(WelcomeMsg);
+            
+            lpWelcomeMessage.setMessageFrequency(LPWelcomeMessage.MessageFrequency.EVERY_CONVERSATION);
+            conversationViewParams.setLpWelcomeMessage(lpWelcomeMessage);
+
             if(campaignInfo!=null){
                 conversationViewParams.setCampaignInfo(campaignInfo);
             }
-            conversationViewParams.setCampaignInfo(campaignInfo);
-
+            
             authParams.setHostAppJWT(authCode);
             //authParams.addCertificatePinningKey(publicKey);
+            //LivePerson.showConversation(this, authParams,conversationViewParams);
             mConversationFragment = (ConversationFragment) LivePerson.getConversationFragment(authParams, conversationViewParams);
 
             if (isValidState()) {
@@ -186,7 +291,49 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             attachFragment();
         }
     }
+
+    public void initLivePerson() {
+        Log.d("HAN_NGUYEN", "initLivePerson: ");
+        showProgressDialog();
+        Bundle extras = getIntent().getExtras();
+        String newAPP;
+        String newID;
+        String AppInstall;
+        if(extras != null) {
+            newAPP= extras.getString("EXTRA_APPID");
+            BrandID = newAPP;
+            newID = extras.getString("EXTRA_APPIDENTIFIER");
+            AppInstall = extras.getString("EXTRA_AppInstallationID");
+            if(newID != null){
+                 AppID = newID;
+            }
+
+            MonitoringInitParams monitoringParams = new MonitoringInitParams(AppInstall);
+            LivePerson.initialize(getApplicationContext(), new InitLivePersonProperties(BrandID, AppID, monitoringParams, new InitLivePersonCallBack() {
+
+                @Override
+                public void onInitSucceed() {
+                    Log.i("HAN_NGUYEN", "Liverperson SDK Initialized" + LivePerson.getSDKVersion());
+                    setUserProfile();
+                    FCMUtils.handleGCMRegistration(ChatActivity.this);
+                    
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initEngagementAttributes();
+                        }
+                    });
+                }
+
+                @Override
+                public void onInitFailed(Exception e) {
+                    Log.e("HAN_NGUYEN", "Liverperson SDK Initialization Failed : " + e.getMessage());
+                }
+            }));
+        }
+    }
     public void initEngagementAttributes(){
+        
 
         Bundle extras = getIntent().getExtras();
         String engagementAtt = "";
@@ -235,7 +382,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                         CampaignInfo campaign = new CampaignInfo(Long.valueOf(currentCampaignId), Long.valueOf(currentEngagementId),
                                 currentEngagementContextId, currentSessionId, currentVisitorId);
                         initFragment(campaign);
-                    } catch (BadArgumentException e){
+                    } catch (Exception  e){
                         initFragment(null);
                     }
                 } else {
@@ -294,7 +441,19 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        String RevolvedTileMsg = "";
+        String ClearTitleMsg = "";
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            RevolvedTileMsg= extras.getString("EXTRA_RevolvedTileMsg");
+            ClearTitleMsg= extras.getString("EXTRA_ClearTitleMsg");
+        }
         getMenuInflater().inflate(getApplication().getResources().getIdentifier("menu_chat", "menu", package_name), menu);
+        MenuItem menuItem1 = menu.getItem(0);
+        menuItem1.setTitle(RevolvedTileMsg);
+        MenuItem menuItem2 = menu.getItem(1);
+        menuItem2.setTitle(ClearTitleMsg);
         mMenu = menu;
         return true;
     }
@@ -314,31 +473,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         }
         return true;
     }
-    public void initLivePerson() {
-        Log.d("HAN_NGUYEN", "initLivePerson: ");
-        Bundle extras = getIntent().getExtras();
-        String newAPP;
-        if(extras != null) {
-            newAPP= extras.getString("EXTRA_APPID");
-            MonitoringInitParams monitoringParams = new MonitoringInitParams("443bc965-320f-402b-92ce-3a79cf831267");
-            LivePerson.initialize(getApplicationContext(), new InitLivePersonProperties(newAPP, AppID, monitoringParams, new InitLivePersonCallBack() {
 
-                @Override
-                public void onInitSucceed() {
-                    Log.i("HAN_NGUYEN", "Liverperson SDK Initialized" + LivePerson.getSDKVersion());
-                    setUserProfile();
-                    initEngagementAttributes();
-                   // initFragment();
-                }
-    
-                @Override
-                public void onInitFailed(Exception e) {
-                    Log.e("HAN_NGUYEN", "Liverperson SDK Initialization Failed : " + e.getMessage());
-                }
-            }));
-        }
-        
-    }
 
     @Override
     public void onViewPositionChanged(float fractionAnchor, float fractionScreen) {
@@ -403,7 +538,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             title = findViewById (getApplication().getResources().getIdentifier("title", "id", package_name));
         }
         setSupportActionBar(toolbar);
-        Drawable icBack = ContextCompat.getDrawable(this, getApplication().getResources().getIdentifier("ic_arrow_left", "drawable", package_name));
+        Drawable icBack = ContextCompat.getDrawable(this, getApplication().getResources().getIdentifier("ic_baseline_close", "drawable", package_name));
         menuTintColors(this, icBack);
         getSupportActionBar().setHomeAsUpIndicator(icBack);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -431,11 +566,35 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        String ClearConversationMsg = "";
+        String ClearConfirmMsg = "";
+        String ChooseMsg = "";
+        String RevolvedTileMsg = "";
+        String ResolvedConfirmMsg = "";
+        String ClearTitleMsg = "";
+        String YesMsg = "";
+        String CancelMsg = "";
+        String ClearMsg = "";
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            ClearConversationMsg= extras.getString("EXTRA_ClearConversationMsg");
+            ClearConfirmMsg= extras.getString("EXTRA_ClearConfirmMsg");
+            ChooseMsg= extras.getString("EXTRA_ChooseMsg");
+            RevolvedTileMsg= extras.getString("EXTRA_RevolvedTileMsg");
+            ResolvedConfirmMsg= extras.getString("EXTRA_ResolvedConfirmMsg");
+            ClearTitleMsg= extras.getString("EXTRA_ClearTitleMsg");
+            YesMsg= extras.getString("EXTRA_YesMsg");
+            CancelMsg= extras.getString("EXTRA_CancelMsg");
+            ClearMsg= extras.getString("EXTRA_ClearMsg");
+        }
+        final String clearm = ClearTitleMsg;
+        final String clearc = ClearConfirmMsg;
         if(id == getApplication().getResources().getIdentifier("clear_history", "id", package_name)) {
             // check if the history is resolved,if not skip the clear command and notify the user.
-            mDialogHelper.action("Clear history",
-                    "All of your existing conversation history will be lost. Are you sure?",
-                    "Clear", "Cancel",
+            mDialogHelper.action(ClearTitleMsg,
+            ClearConversationMsg,
+            ClearMsg, CancelMsg,
                     (dialog, which) -> {
                         LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
                             @Override
@@ -444,7 +603,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                                     //clear history only from device
                                     LivePerson.clearHistory();
                                 } else {
-                                    mDialogHelper.alert("Clear history", "Please resolve the conversation first");
+                                    mDialogHelper.alert(clearm, clearc);
                                 }
 
                             }
@@ -457,9 +616,9 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
                     });
         } else if(id == getApplication().getResources().getIdentifier("mark_as_resolved", "id", package_name)){
-            mDialogHelper.action("Resolve the conversation",
-                    "Are you sure this topic is resolved?",
-                    "Yes", "Cancel",
+            mDialogHelper.action(RevolvedTileMsg,
+            ResolvedConfirmMsg,
+            YesMsg, CancelMsg,
                     (dialog, which) -> {
                         LivePerson.resolveConversation();
                     });
@@ -476,6 +635,14 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
     @Override
     public void reconectChat() {
+        String authCode = "";
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            authCode= extras.getString("EXTRA_AUTHENTICATE");
+            //LivePerson.reconnect(new LPAuthenticationParams().setHostAppJWT(authCode));
+        }
+        
     }
 
     @Override
@@ -488,4 +655,63 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         if (mMenu != null)
             mMenu.close();
     }
+    private String[] getLanguage(String key){
+        Map<String, String[]> map = new HashMap<>();
+         map.put("en-UK", new String[]{"en","English"});
+         map.put("ko-KR", new String[]{"ko","Korean"});
+         map.put("zh-TW", new String[]{"zh-TW","Taiwan"});
+         map.put("ja-JP", new String[]{"ja","Japanese"});
+         map.put("zh-HK", new String[]{"zh-HK","Hong kong"});
+        String[] result = map.get(key);
+        return result;
+     }
+     protected void createLocale(String language, @Nullable String country) {
+        Resources resources = getBaseContext().getResources();
+        Configuration configuration = resources.getConfiguration();
+        Locale customLocale;
+
+        if (TextUtils.isEmpty(language)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                language = resources.getConfiguration().getLocales().get(0).getCountry();
+            } else {
+                language = resources.getConfiguration().locale.getCountry();
+            }
+        }
+
+        if (TextUtils.isEmpty(country)) {
+            String[] separated = language.split("-");
+            if(separated.length>1){
+                customLocale = new Locale(separated[0],separated[1]);
+            }else{
+                customLocale = new Locale(language);
+            }
+            
+        } else {
+            customLocale = new Locale(language, country);
+        }
+        Locale.setDefault(customLocale);
+
+        configuration.setLocale(customLocale);
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+
+        Locale locale = getLocale();
+        Log.d(TAG, "country = " + locale.getCountry() + ", language = " + locale.getLanguage());
+    }
+
+    private Locale getLocale() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return getBaseContext().getResources().getConfiguration().getLocales().get(0);
+        } else {
+            return getBaseContext().getResources().getConfiguration().locale;
+        }
+    }
+    @Override
+    public void onUserInteraction(){
+        super.onUserInteraction();
+
+        //Reset the timer on user interaction...
+        countDownTimer.cancel();            
+        countDownTimer.start();
+    }   
+    
 }
