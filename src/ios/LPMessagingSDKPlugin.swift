@@ -584,7 +584,9 @@ extension String {
         ]
             getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
 
-                            self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery(brandID, campaignInfo: campInfo)
+                            let campaignInfo = LPCampaignInfo(campaignId: 3069951530, engagementId: 3069951830, contextId: nil, sessionId: nil, visitorId: nil)
+
+                            self.conversationQuery = LPMessagingSDK.instance.getConversationBrandQuery(brandID, campaignInfo: campaignInfo)
                             if let conversationVC = chatVC.viewControllers.first as? ConversationVC {
                                 conversationVC.conversationQuery = self.conversationQuery
                                 //conversationVC.alert.dismiss(animated: true, completion: nil)
