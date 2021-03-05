@@ -320,7 +320,15 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            initEngagementAttributes();
+                            //initEngagementAttributes();
+                            try {
+                                // Create Campaign Object
+                                CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
+                                        null, null, null);
+                                initFragment(campaign);
+                            } catch (Exception  ec){
+                                initFragment(null);
+                            }
                         }
                     });
                 }
