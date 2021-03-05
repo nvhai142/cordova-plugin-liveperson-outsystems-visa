@@ -351,11 +351,11 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         }
 
         JSONArray engagementAttributes = null;
-        try {
-            //engagementAttributes = new JSONArray(engagementAtt);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error Creating Engagement Attr :: " + e);
-        }
+        // try {
+        //     //engagementAttributes = new JSONArray(engagementAtt);
+        // } catch (JSONException e) {
+        //     Log.e(TAG, "Error Creating Engagement Attr :: " + e);
+        // }
         MonitoringParams params = new MonitoringParams("PageId", entryPoints, engagementAttributes);
         LPMonitoringIdentity identity = new  LPMonitoringIdentity(null,"");
 
