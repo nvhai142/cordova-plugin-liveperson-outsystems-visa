@@ -97,7 +97,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     public static Activity fa;
     private long startTime = 15 * 60 * 1000; // 15 MINS IDLE TIME
     private final long interval = 1 * 1000;
-    private CountDownTimer countDownTimer;
+    //private CountDownTimer countDownTimer;
 
     public static String getBrandID(){
         return BrandID;
@@ -144,35 +144,35 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
         initLivePerson();
 
-        countDownTimer = new CountDownTimer(startTime, 1000) {
+        // countDownTimer = new CountDownTimer(startTime, 1000) {
 
-            public void onTick(long millisUntilFinished) {
-            }
+        //     public void onTick(long millisUntilFinished) {
+        //     }
 
-            public void onFinish() {
-                // TODO: restart counter
-                finishChatScreen();
-                // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
-                //     @Override
-                //     public void onSuccess(Boolean aBoolean) {
-                //         if(!aBoolean){
-                //             finishChatScreen();
-                //         }
-                //     }
+        //     public void onFinish() {
+        //         // TODO: restart counter
+        //         finishChatScreen();
+        //         // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
+        //         //     @Override
+        //         //     public void onSuccess(Boolean aBoolean) {
+        //         //         if(!aBoolean){
+        //         //             finishChatScreen();
+        //         //         }
+        //         //     }
         
-                //     @Override
-                //     public void onError(Exception e) {
-                //         finishChatScreen();
-                //     }
-                // });
-            }
-        };
+        //         //     @Override
+        //         //     public void onError(Exception e) {
+        //         //         finishChatScreen();
+        //         //     }
+        //         // });
+        //     }
+        // };
     }
     @Override
     public void onPause() {
         super.onPause();
-        countDownTimer.cancel();            
-        countDownTimer.start();
+        //countDownTimer.cancel();            
+        //countDownTimer.start();
     }
     public void showProgressDialog() {
         mDialogHelper.showProgress();
@@ -352,7 +352,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
         JSONArray engagementAttributes = null;
         try {
-            engagementAttributes = new JSONArray(engagementAtt);
+            //engagementAttributes = new JSONArray(engagementAtt);
         } catch (JSONException e) {
             Log.e(TAG, "Error Creating Engagement Attr :: " + e);
         }
@@ -710,8 +710,8 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         super.onUserInteraction();
 
         //Reset the timer on user interaction...
-        countDownTimer.cancel();            
-        countDownTimer.start();
+        //countDownTimer.cancel();            
+        //countDownTimer.start();
     }   
     
 }
