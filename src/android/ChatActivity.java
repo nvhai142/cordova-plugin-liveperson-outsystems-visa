@@ -400,7 +400,14 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
             @Override
             public void onError(MonitoringErrorType monitoringErrorType, Exception e) {
-                initFragment(null);
+                try {
+                    // Create Campaign Object
+                    CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
+                            null, null, null);
+                    initFragment(campaign);
+                } catch (Exception  e){
+                    initFragment(null);
+                }
             }
         });
     }
