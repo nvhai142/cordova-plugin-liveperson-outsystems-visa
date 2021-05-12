@@ -47,6 +47,8 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
     private static final String RECONNECT_WITH_NEW_TOKEN = "reconnect_with_new_token";
     public static final String LP_ACCOUNT_ID = "lp_account_id";
     public static final String LP_REGISTER_PUSHER = "register_pusher";
+    public static final String LP_REGISTER_DEVICE = "register_device";
+    public static final String LP_REMOVE_DEVICE = "remove_device";
 
     private static final String LP_REGISTER_GLOBAL_ASYNC_EVENT_CALLBACK = "lp_register_event_callback";
 
@@ -118,17 +120,6 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             case CLOSE_CONVERSATION_SCREEN:
                 mCallbackContext = callbackContext;
 
-                // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
-                //     @Override
-                //     public void onSuccess(Boolean aBoolean) {
-                //         LivePerson.resolveConversation();
-                //     }
-        
-                //     @Override
-                //     public void onError(Exception e) {
-                //     }
-                // });
-
                 ChatActivity.fa.finish();
 
                 Log.d(TAG, CLOSE_CONVERSATION_SCREEN+ " LPMessagingSDKConversationScreenClosed " + args);
@@ -139,6 +130,36 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 } catch (JSONException e) {
                    
                 }
+                break;
+            case LP_REGISTER_DEVICE:
+                mCallbackContext = callbackContext;
+                
+                FCMUtils.handleGCMRegistration(cordova.getActivity().getApplication().getApplicationContext());
+               JSONObject jsonRegister = new JSONObject();
+               try {
+                jsonRegister.put("eventName","LPMessagingSDKRegisterDevice");
+
+               } catch (JSONException e) {
+                   
+               }
+                PluginResult resultRegister = new PluginResult(PluginResult.Status.OK, jsonRegister.toString());
+                resultRegister.setKeepCallback(true);
+                mCallbackContext.sendPluginResult(resultRegister);
+                break;
+            case LP_REMOVE_DEVICE:
+                mCallbackContext = callbackContext;
+
+                FCMUtils.removeGCMRegistration(cordova.getActivity().getApplication().getApplicationContext());
+                JSONObject jsonRemove = new JSONObject();
+                try {
+                    jsonRemove.put("eventName","LPMessagingSDKRemoveDevice");
+
+                } catch (JSONException e) {
+                   
+                }
+                PluginResult resultRemove = new PluginResult(PluginResult.Status.OK, jsonRemove.toString());
+                resultRemove.setKeepCallback(true);
+                mCallbackContext.sendPluginResult(resultRemove);
                 break;
             case CLEAR_HISTORY_AND_LOGOUT:
                 mCallbackContext = callbackContext;
