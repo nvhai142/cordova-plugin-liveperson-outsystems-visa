@@ -569,8 +569,10 @@ extension String {
         ]
             self.counter = 2;
             getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
+                            let campaignInfo = LPCampaignInfo(campaignId: 3069951530, engagementId: 3069951830, contextId: nil, sessionId: nil, visitorId: nil)
 
-                            self.conversationQuery = LPMessaging.instance.getConversationBrandQuery(brandID, campaignInfo: campInfo)
+                            self.conversationQuery = LPMessaging.instance.getConversationBrandQuery(brandID, campaignInfo: campaignInfo)
+                            
                             if let conversationVC = chatVC.viewControllers.first as? ConversationVC {
                                 conversationVC.conversationQuery = self.conversationQuery
                                 //conversationVC.alert.dismiss(animated: true, completion: nil)
@@ -659,17 +661,19 @@ extension String {
             let pageID = getEngagementResponse.pageId
             success?(campaignInfo, pageID)
         }) { (error) in
-            if (self.counter > 0) {
-                self.counter -= 1
-                self.getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes, success: success)
-            }else {
-                self.conversationScreen?.alert.dismiss(animated: true, completion: nil)
-                let alertFuck = UIAlertController(title: "Chat Unassigned", message: "Chat not available for now! please try again later.", preferredStyle: .alert)
-                alertFuck.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (alertAction) in
-                    self.conversationScreen?.closeChat()
-                }))
-                self.conversationScreen?.present(alertFuck, animated: true, completion: nil)
-            }
+            
+            success?(nil,nil)
+            // if (self.counter > 0) {
+            //     self.counter -= 1
+            //     self.getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes, success: success)
+            // }else {
+            //     self.conversationScreen?.alert.dismiss(animated: true, completion: nil)
+            //     let alertFuck = UIAlertController(title: "Chat Unassigned", message: "Chat not available for now! please try again later.", preferredStyle: .alert)
+            //     alertFuck.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (alertAction) in
+            //         self.conversationScreen?.closeChat()
+            //     }))
+            //     self.conversationScreen?.present(alertFuck, animated: true, completion: nil)
+            // }
         }
     }
     

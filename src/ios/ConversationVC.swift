@@ -64,14 +64,14 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     }
 
     @objc func appWillEnterForeground() {
-        let now = NSDate()
-        if let oldDate = backgroundDate{
-            if (oldDate.timeIntervalSinceReferenceDate + kTimeoutUserInteraction) < now.timeIntervalSinceReferenceDate
-            {
-                self.closeChat()
-                return
-            }
-        }
+        // let now = NSDate()
+        // if let oldDate = backgroundDate{
+        //     if (oldDate.timeIntervalSinceReferenceDate + kTimeoutUserInteraction) < now.timeIntervalSinceReferenceDate
+        //     {
+        //         self.closeChat()
+        //         return
+        //     }
+        // }
         print( "")
     }
     
@@ -85,7 +85,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         LPMessaging.instance.delegate = self
         self.configUI()
 
-        self.addAppObserver()
+ //       self.addAppObserver()
 
         let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
         loadingIndicator.hidesWhenStopped = true
@@ -99,10 +99,10 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         alert.view.addSubview(loadingIndicator)
         present(alert, animated: true, completion: nil)
 
-        self.resetIdleTimer()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(resetIdleTimer))
-        tapGesture.cancelsTouchesInView = false
-        self.navigationController?.view.addGestureRecognizer(tapGesture)
+        // self.resetIdleTimer()
+        // let tapGesture = UITapGestureRecognizer(target: self, action: #selector(resetIdleTimer))
+        // tapGesture.cancelsTouchesInView = false
+        // self.navigationController?.view.addGestureRecognizer(tapGesture)
     }
 
     func setupLanguage(language:String){
@@ -247,7 +247,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        idleTimer = nil
+       // idleTimer = nil
     }
 
     @IBAction func optionPressed(sender:Any) {
