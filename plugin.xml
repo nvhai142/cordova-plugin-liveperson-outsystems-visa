@@ -2,7 +2,7 @@
 <plugin 
 	xmlns="http://apache.org/cordova/ns/plugins/1.0" 
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-plugin-liveperson-test-main"
+    id="cordova-plugin-liveperson-dma-main"
 	version="1.0.0">
 
 	<name>Live Person Messaging</name>
