@@ -400,7 +400,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                         CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
                                 null, null, null);
                         initFragment(campaign);
-                    } catch (Exception  e){
+                    } catch (Exception  ec){
                         initFragment(null);
                     }
                 }
@@ -413,7 +413,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
                             null, null, null);
                     initFragment(campaign);
-                } catch (Exception  e){
+                } catch (Exception  eb){
                     initFragment(null);
                 }
             }
