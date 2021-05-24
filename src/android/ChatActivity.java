@@ -320,15 +320,15 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //initEngagementAttributes();
-                            try {
-                                // Create Campaign Object
-                                CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                                        null, null, null);
-                                initFragment(campaign);
-                            } catch (Exception  ec){
-                                initFragment(null);
-                            }
+                            initEngagementAttributes();
+                            // try {
+                            //     // Create Campaign Object
+                            //     CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
+                            //             null, null, null);
+                            //     initFragment(campaign);
+                            // } catch (Exception  ec){
+                            //     initFragment(null);
+                            // }
                         }
                     });
                 }
@@ -395,27 +395,13 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     }
                 } else {
                     // Log Error
-                    try {
-                        // Create Campaign Object
-                        CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                                null, null, null);
-                        initFragment(campaign);
-                    } catch (Exception  ec){
-                        initFragment(null);
-                    }
+                    initFragment(null);
                 }
             }
 
             @Override
             public void onError(MonitoringErrorType monitoringErrorType, Exception e) {
-                try {
-                    // Create Campaign Object
-                    CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                            null, null, null);
-                    initFragment(campaign);
-                } catch (Exception  eb){
-                    initFragment(null);
-                }
+                initFragment(null);
             }
         });
     }
