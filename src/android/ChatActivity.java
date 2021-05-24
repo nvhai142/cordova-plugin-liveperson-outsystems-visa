@@ -97,7 +97,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     public static Activity fa;
     private long startTime = 15 * 60 * 1000; // 15 MINS IDLE TIME
     private final long interval = 1 * 1000;
-    //private CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer;
 
     public static String getBrandID(){
         return BrandID;
@@ -171,8 +171,8 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     @Override
     public void onPause() {
         super.onPause();
-        //countDownTimer.cancel();            
-        //countDownTimer.start();
+        // countDownTimer.cancel();            
+        // countDownTimer.start();
     }
     public void showProgressDialog() {
         mDialogHelper.showProgress();
@@ -320,15 +320,15 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //initEngagementAttributes();
-                            try {
-                                // Create Campaign Object
-                                CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                                        null, null, null);
-                                initFragment(campaign);
-                            } catch (Exception  ec){
-                                initFragment(null);
-                            }
+                            initEngagementAttributes();
+                            // try {
+                            //     // Create Campaign Object
+                            //     CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
+                            //             null, null, null);
+                            //     initFragment(campaign);
+                            // } catch (Exception  ec){
+                            //     initFragment(null);
+                            // }
                         }
                     });
                 }
@@ -359,11 +359,11 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         }
 
         JSONArray engagementAttributes = null;
-        // try {
-        //     //engagementAttributes = new JSONArray(engagementAtt);
-        // } catch (JSONException e) {
-        //     Log.e(TAG, "Error Creating Engagement Attr :: " + e);
-        // }
+        try {
+            engagementAttributes = new JSONArray(engagementAtt);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error Creating Engagement Attr :: " + e);
+        }
         MonitoringParams params = new MonitoringParams("PageId", entryPoints, engagementAttributes);
         LPMonitoringIdentity identity = new  LPMonitoringIdentity(null,"");
 
@@ -387,35 +387,21 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     // Try-Catch Block
                     try {
                         // Create Campaign Object
-                        CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                                null, null, null);
+                        CampaignInfo campaign = new CampaignInfo(Long.valueOf(currentCampaignId), Long.valueOf(currentEngagementId),
+                                currentEngagementContextId, currentSessionId, currentVisitorId);
                         initFragment(campaign);
                     } catch (Exception  e){
                         initFragment(null);
                     }
                 } else {
                     // Log Error
-                    try {
-                        // Create Campaign Object
-                        CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                                null, null, null);
-                        initFragment(campaign);
-                    } catch (Exception  e){
-                        initFragment(null);
-                    }
+                    initFragment(null);
                 }
             }
 
             @Override
             public void onError(MonitoringErrorType monitoringErrorType, Exception e) {
-                try {
-                    // Create Campaign Object
-                    CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                            null, null, null);
-                    initFragment(campaign);
-                } catch (Exception  ec){
-                    initFragment(null);
-                }
+                initFragment(null);
             }
         });
     }
@@ -732,8 +718,37 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         super.onUserInteraction();
 
         //Reset the timer on user interaction...
-        //countDownTimer.cancel();            
-        //countDownTimer.start();
+        // countDownTimer.cancel();            
+        // countDownTimer.start();
     }   
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        Log.d("", "Han_Home_Acyive: ");
+        if(menu !=null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
+                        @Override
+                        public void onSuccess(Boolean aBoolean) {
+                            Log.d("", "Han_Home_Acyive: " + aBoolean);
+                            if (aBoolean) {
+                                menu.setGroupEnabled(getResources().getIdentifier("grp_urgent", "id", getPackageName()), true);
+                            } else {
+                                menu.setGroupEnabled(getResources().getIdentifier("grp_urgent", "id", getPackageName()), false);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                        }
+                    });
+                }
+            });
+
+        }
+
+        return super.onMenuOpened(featureId, menu);
+    }
     
 }
