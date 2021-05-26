@@ -568,7 +568,7 @@ extension String {
             ]
         ]
             self.counter = 2;
-            getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
+            //getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes) { (campInfo, pageID) in
                             let campaignInfo = LPCampaignInfo(campaignId: 3069951530, engagementId: 3069951830, contextId: nil, sessionId: nil, visitorId: nil)
 
                             self.conversationQuery = LPMessaging.instance.getConversationBrandQuery(brandID, campaignInfo: campaignInfo)
@@ -639,7 +639,7 @@ extension String {
                                 LPMessaging.instance.showConversation(conversationViewParams, authenticationParams: authenticationParams)
                             }
                        // }
-            }
+            //}
             
         }
         
