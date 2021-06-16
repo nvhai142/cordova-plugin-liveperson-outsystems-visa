@@ -663,7 +663,7 @@ extension String {
             success?(campaignInfo, pageID)
         }) { (error) in
             
-            success?(nil,nil)
+            //success?(nil,nil)
              if (self.counter > 0) {
                  self.counter -= 1
                  self.getEngagement(entryPoints: entryPoints, engagementAttributes: engagementAttributes, success: success)
