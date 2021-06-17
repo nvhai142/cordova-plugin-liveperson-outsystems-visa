@@ -214,7 +214,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        \"email\": \""+args.getString(18)+"\",\n" +
                 "        \"phone\": \""+args.getString(19)+"\",\n" +
                 "        \"address\": {\n" +
-                "        \"country\": \""+args.getString(3)+"\n" +
+                "        \"country\": \""+args.getString(3)+"\"\n" +
                 "        }\n" +
                 "        }\n" +
                 "        ]\n" +
