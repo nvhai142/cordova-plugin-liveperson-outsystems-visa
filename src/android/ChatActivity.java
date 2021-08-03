@@ -99,6 +99,8 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     private final long interval = 1 * 1000;
     private CountDownTimer countDownTimer;
 
+    private int counter = 2;
+
     public static String getBrandID(){
         return BrandID;
     }
@@ -308,6 +310,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            counter = 2;
                             initEngagementAttributes();
                             // try {
                             //     // Create Campaign Object
@@ -379,21 +382,35 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                                 currentEngagementContextId, currentSessionId, currentVisitorId);
                         initFragment(campaign);
                     } catch (Exception  e){
-                        initFragment(null);
+                        retriesEngagement();
                     }
                 } else {
                     // Log Error
-                    initFragment(null);
+                    retriesEngagement();
                 }
             }
 
             @Override
             public void onError(MonitoringErrorType monitoringErrorType, Exception e) {
-                initFragment(null);
+                retriesEngagement();
             }
         });
     }
-
+public void retriesEngagement(){
+        if (counter>0){
+            counter -=1;
+            initEngagementAttributes();
+        }else{
+            Bundle extras = getIntent().getExtras();
+            String UnTitle = "";
+            String UnMsg = "";
+            if(extras != null) {
+                UnTitle= extras.getString("EXTRA_UnassignedTitle");
+                UnMsg= extras.getString("EXTRA_UnassignedMsg");
+            }
+            mDialogHelper.alert(UnTitle, UnMsg, dialog -> finishChatScreen());
+        }
+    }
     private boolean isValidState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return !isFinishing() && !isDestroyed();
