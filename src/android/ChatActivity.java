@@ -144,35 +144,23 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
         initLivePerson();
 
-        // countDownTimer = new CountDownTimer(startTime, 1000) {
+        countDownTimer = new CountDownTimer(startTime, 1000) {
 
-        //     public void onTick(long millisUntilFinished) {
-        //     }
+            public void onTick(long millisUntilFinished) {
+            }
 
-        //     public void onFinish() {
-        //         // TODO: restart counter
-        //         finishChatScreen();
-        //         // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
-        //         //     @Override
-        //         //     public void onSuccess(Boolean aBoolean) {
-        //         //         if(!aBoolean){
-        //         //             finishChatScreen();
-        //         //         }
-        //         //     }
-        
-        //         //     @Override
-        //         //     public void onError(Exception e) {
-        //         //         finishChatScreen();
-        //         //     }
-        //         // });
-        //     }
-        // };
+            public void onFinish() {
+                // TODO: restart counter
+                finishChatScreen();
+                
+            }
+        };
     }
     @Override
     public void onPause() {
         super.onPause();
-        // countDownTimer.cancel();            
-        // countDownTimer.start();
+        countDownTimer.cancel();            
+        countDownTimer.start();
     }
     public void showProgressDialog() {
         mDialogHelper.showProgress();
@@ -718,8 +706,8 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         super.onUserInteraction();
 
         //Reset the timer on user interaction...
-        // countDownTimer.cancel();            
-        // countDownTimer.start();
+        countDownTimer.cancel();            
+        countDownTimer.start();
     }   
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
