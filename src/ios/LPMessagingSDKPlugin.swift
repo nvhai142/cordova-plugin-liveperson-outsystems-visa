@@ -371,7 +371,7 @@ extension String {
         let CancelMsg = command.arguments[33] as? String ?? "Cancel"
         let ClearMsg = command.arguments[34] as? String ?? "Clear"
         let MenuMsg = command.arguments[35] as? String ?? "Menu"
-        let ChatTitleHeader = command.arguments[25] as? String ?? "Visa Concierge"
+        let ChatTitleHeader = command.arguments[25] as? String ?? "Concierge"
 
         let WaitingTitle = command.arguments[36] as? String ?? "Please wait..."
         let WaitingMsg = command.arguments[37] as? String ?? "Please wait while we connect you to our next available agent. Thanks you."
@@ -380,8 +380,8 @@ extension String {
         
         let ButtonOpt1Msg = command.arguments[42] as? String ?? "Card Billing / Loyalty"
         let ButtonOpt1Value = command.arguments[43] as? String ?? "Card Billing / Loyalty"
-        let ButtonOpt2Msg = command.arguments[44] as? String ?? "Visa Concierge"
-        let ButtonOpt2Value = command.arguments[45] as? String ?? "Visa Concierge"
+        let ButtonOpt2Msg = command.arguments[44] as? String ?? "Concierge"
+        let ButtonOpt2Value = command.arguments[45] as? String ?? "Concierge"
 
         let LanguageChat = command.arguments[40] as? String ?? "en-UK"
         let LoadingMsg = command.arguments[41] as? String ?? "Loading..."
@@ -540,44 +540,39 @@ extension String {
             let entryPoints = ["http://www.liveperson-test.com",enp,"lang://En"]
 
             let engagementAttributes = [
-            [
-                "type": "personal",
-                "personal": [
-                    "language": language,
-                    "company": company,
-                    "gender": gender,
-                    "firstname": firstName, // FIRST NAME
-                    "lastname": lastName, // SURNAME
-                    "age": [
-                        "age": age, // AGE AS INTEGER
-                        "year": year, // BIRTH YEAR
-                        "month": month, // BIRTH MONTH
-                        "day": day // BIRTH DAY
-                    ],
-                    "contacts": [
                         [
-                            "email": email,
-                            "phone": phone,
-                            "address": [
-                                "country": country,
-                                "region": region
+                            "type": "personal",
+                            "personal": [
+                                "language": language,
+                                "company": company,
+                                "gender": gender,
+                                "firstname": firstName, // FIRST NAME
+                                "lastname": lastName, // SURNAME
+                                "contacts": [
+                                    [
+                                        "email": email,
+                                        "phone": phone,
+                                        "address": [
+                                            "country": country
+                                        ]
+                                    ]
+                                ]
                             ]
+                        ],
+                        [
+                            "info": [
+                                "storeZipCode": zipcode,
+                                "clientName": accountName,
+                                "role": partyID,
+                                "programName": programName,
+                                "customerId": customerID,
+                                "storeNumber": storedNumber,
+                                "ctype": ctype,
+                                "userName": userName
+                            ],
+                            "type": "ctmrinfo"
                         ]
                     ]
-                ]
-            ],
-            [
-                "info": [
-                    "storeZipCode": zipcode,
-                    "accountName": accountName,
-                    "customerId": customerID,
-                    "storeNumber": storedNumber,
-                    "ctype": ctype,
-                    "userName": userName
-                ],
-                "type": "ctmrinfo"
-            ]
-        ]
             self.counter = 2;
             
             var UnssTitle = ""

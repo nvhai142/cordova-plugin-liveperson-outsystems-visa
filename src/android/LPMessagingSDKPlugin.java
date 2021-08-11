@@ -203,19 +203,18 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        \"language\": \""+args.getString(5)+"\",\n" +
                 "        \"firstname\": \""+args.getString(12)+"\",\n" +
                 "        \"lastname\": \""+args.getString(13)+"\",\n" +
-                "        \"age\": {\n" +
-                "        \"age\": \""+args.getString(14)+"\",\n" +
-                "        \"year\": \""+args.getString(15)+"\",\n" +
-                "        \"month\": \""+args.getString(16)+"\",\n" +
-                "        \"day\": \""+args.getString(17)+"\"\n" +
-                "        },\n" +
+                // "        \"age\": {\n" +
+                // "        \"age\": \""+args.getString(14)+"\",\n" +
+                // "        \"year\": \""+args.getString(15)+"\",\n" +
+                // "        \"month\": \""+args.getString(16)+"\",\n" +
+                // "        \"day\": \""+args.getString(17)+"\"\n" +
+                // "        },\n" +
                 "        \"contacts\": [\n" +
                 "        {\n" +
                 "        \"email\": \""+args.getString(18)+"\",\n" +
                 "        \"phone\": \""+args.getString(19)+"\",\n" +
                 "        \"address\": {\n" +
-                "        \"country\": \""+args.getString(3)+"\",\n" +
-                "        \"region\": \""+args.getString(4)+"\"\n" +
+                "        \"country\": \""+args.getString(3)+"\"\n" +
                 "        }\n" +
                 "        }\n" +
                 "        ]\n" +
@@ -224,7 +223,9 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        {\n" +
                 "        \"info\": {\n" +
                 "        \"storeZipCode\": \""+args.getString(6)+"\",\n" +
-                "        \"accountName\": \""+args.getString(7)+"\",\n" +
+                "        \"clientName\": \""+args.getString(7)+"\",\n" +
+                "        \"role\": \""+args.getString(2)+"\",\n" +
+                "        \"programName\": \""+args.getString(15)+"\",\n" +
                 "        \"customerId\": \""+args.getString(8)+"\",\n" +
                 "        \"storeNumber\": \""+args.getString(10)+"\",\n" +
                 "        \"ctype\": \""+args.getString(9)+"\",\n" +
