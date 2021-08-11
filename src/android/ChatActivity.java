@@ -78,7 +78,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
 
     private Menu mMenu;
     String package_name ;
-    private DialogHelper mDialogHelper;
+    public DialogHelper mDialogHelper;
 
     private final SwipeBackLayout.DragEdge DEFAULT_DRAG_EDGE = SwipeBackLayout.DragEdge.LEFT;
 
@@ -98,7 +98,6 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
     private long startTime = 15 * 60 * 1000; // 15 MINS IDLE TIME
     private final long interval = 1 * 1000;
     private CountDownTimer countDownTimer;
-
     private int counter = 2;
 
     public static String getBrandID(){
@@ -154,7 +153,19 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             public void onFinish() {
                 // TODO: restart counter
                 finishChatScreen();
-                
+                // LivePerson.checkActiveConversation(new ICallback<Boolean, Exception>() {
+                //     @Override
+                //     public void onSuccess(Boolean aBoolean) {
+                //         if(!aBoolean){
+                //             finishChatScreen();
+                //         }
+                //     }
+        
+                //     @Override
+                //     public void onError(Exception e) {
+                //         finishChatScreen();
+                //     }
+                // });
             }
         };
     }
@@ -165,7 +176,14 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
         countDownTimer.start();
     }
     public void showProgressDialog() {
-        mDialogHelper.showProgress();
+        Bundle extras = getIntent().getExtras();
+        String WaitTitle = "";
+        String WaitMsg = "";
+        if(extras != null) {
+            WaitTitle= extras.getString("EXTRA_WaitingTitle");
+            WaitMsg= extras.getString("EXTRA_WaitingMsg");
+        }    
+        mDialogHelper.alertWithoutOK(WaitTitle, WaitMsg);
     }
 
     public void dismissProgressDialog() { //CreateNewConciergeCase.View::
@@ -180,7 +198,14 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
        // setUserProfile();
     }
 
+    @Override
+    public void closeAlert() {
+        if (mDialogHelper != null){
+            Log.d(TAG, "closeAlert: ");
+            mDialogHelper.close();
+        }
 
+    }
     private void setUserProfile() {
         Bundle extras = getIntent().getExtras();
 
@@ -230,19 +255,19 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             String authCode = "";
             String publicKey = "";
             String WelcomeMsg = "How can I help you today?";
-            String ButtonOpt1Msg = "";
-            String ButtonOpt1Value = "";
-            String ButtonOpt2Msg = "";
-            String ButtonOpt2Value = "";
+            String QuickOpt1Title = "";
+            String QuickOpt1Msg = "";
+            String QuickOpt2Title = "";
+            String QuickOpt2Msg = "";
 
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
                 authCode= extras.getString("EXTRA_AUTHENTICATE");
                 WelcomeMsg= extras.getString("EXTRA_WelcomeMsg");
-                ButtonOpt1Msg= extras.getString("EXTRA_ButtonOpt1Msg");
-                ButtonOpt1Value= extras.getString("EXTRA_ButtonOpt1Value");
-                ButtonOpt2Msg= extras.getString("EXTRA_ButtonOpt2Msg");
-                ButtonOpt2Value= extras.getString("EXTRA_ButtonOpt2Value");
+                QuickOpt1Title= extras.getString("EXTRA_QuickOpt1Title");
+                QuickOpt1Msg= extras.getString("EXTRA_QuickOpt1Msg");
+                QuickOpt2Title= extras.getString("EXTRA_QuickOpt2Title");
+                QuickOpt2Msg= extras.getString("EXTRA_QuickOpt2Msg");
             }
             Log.d(TAG, "initFragment. authCode = " + authCode);
             LPAuthenticationParams authParams = new LPAuthenticationParams();
@@ -252,6 +277,17 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             Log.d(TAG, "initFragment. publicKey = " + campaignInfo);
 
             LPWelcomeMessage lpWelcomeMessage = new LPWelcomeMessage(WelcomeMsg);
+
+            List<MessageOption> optionItems = new ArrayList<>();
+            optionItems.add(new MessageOption(QuickOpt1Title, QuickOpt1Msg));
+            optionItems.add(new MessageOption(QuickOpt2Title, QuickOpt2Msg));
+            try {
+                lpWelcomeMessage.setMessageOptions(optionItems);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            lpWelcomeMessage.setNumberOfItemsPerRow(2);
+
             
             lpWelcomeMessage.setMessageFrequency(LPWelcomeMessage.MessageFrequency.EVERY_CONVERSATION);
             conversationViewParams.setLpWelcomeMessage(lpWelcomeMessage);
@@ -312,14 +348,6 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
                         public void run() {
                             counter = 2;
                             initEngagementAttributes();
-                            // try {
-                            //     // Create Campaign Object
-                            //     CampaignInfo campaign = new CampaignInfo(3069951530L,3069951830L,
-                            //             null, null, null);
-                            //     initFragment(campaign);
-                            // } catch (Exception  ec){
-                            //     initFragment(null);
-                            // }
                         }
                     });
                 }
@@ -396,7 +424,7 @@ public class ChatActivity extends AppCompatActivity implements SwipeBackLayout.S
             }
         });
     }
-public void retriesEngagement(){
+    public void retriesEngagement(){
         if (counter>0){
             counter -=1;
             initEngagementAttributes();

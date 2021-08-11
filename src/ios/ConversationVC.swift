@@ -32,6 +32,8 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     var ChatTitleHeader:String = "Visa Concierge"
     var LanguageAPP:String = "en-UK"
     var LoadingMsg:String = "Loading..."
+    var WaitingTitle:String = "Please wait..."
+    var WaitingMsg:String = "Please wait while we connect you to our next available agent. Thanks you."
 
     var backgroundDate:NSDate?
     @objc func appDidEnterBackground() {
@@ -53,6 +55,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     
     @objc func idleTimerExceeded() {
         idleTimer = nil
+        // làm cái bếp gì đó đây nha
         self.closeChat()
     }
     override var next: UIResponder?{
@@ -63,14 +66,14 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     }
 
     @objc func appWillEnterForeground() {
-         let now = NSDate()
-         if let oldDate = backgroundDate{
-             if (oldDate.timeIntervalSinceReferenceDate + kTimeoutUserInteraction) < now.timeIntervalSinceReferenceDate
-             {
-                 self.closeChat()
-                 return
-             }
-         }
+        let now = NSDate()
+        if let oldDate = backgroundDate{
+            if (oldDate.timeIntervalSinceReferenceDate + kTimeoutUserInteraction) < now.timeIntervalSinceReferenceDate
+            {
+                self.closeChat()
+                return
+            }
+        }
         print( "")
     }
     
@@ -93,15 +96,16 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
         //loadingIndicator.color = .gray
         loadingIndicator.startAnimating();
         
-        alert.message = LoadingMsg
+        alert.message = self.WaitingMsg
+        alert.title = self.WaitingTitle
 
-        alert.view.addSubview(loadingIndicator)
+        //alert.view.addSubview(loadingIndicator)
         present(alert, animated: true, completion: nil)
 
-         self.resetIdleTimer()
-         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(resetIdleTimer))
-         tapGesture.cancelsTouchesInView = false
-         self.navigationController?.view.addGestureRecognizer(tapGesture)
+        self.resetIdleTimer()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(resetIdleTimer))
+        tapGesture.cancelsTouchesInView = false
+        self.navigationController?.view.addGestureRecognizer(tapGesture)
     }
 
     func setupLanguage(language:String){
@@ -246,7 +250,7 @@ class ConversationVC: UIViewController, LPMessagingSDKdelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-       // idleTimer = nil
+        idleTimer = nil
     }
 
     @IBAction func optionPressed(sender:Any) {

@@ -194,7 +194,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             case START_CONVERSATION:
                 mCallbackContext = callbackContext;
                 String appIDs = args.getString(0);
-                                String engagement = "[\n" +
+                String engagement = "[\n" +
                 "        {\n" +
                 "        \"type\": \"personal\",\n" +
                 "        \"personal\": {\n" +
@@ -203,18 +203,19 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        \"language\": \""+args.getString(5)+"\",\n" +
                 "        \"firstname\": \""+args.getString(12)+"\",\n" +
                 "        \"lastname\": \""+args.getString(13)+"\",\n" +
-                // "        \"age\": {\n" +
-                // "        \"age\": \""+args.getString(14)+"\",\n" +
-                // "        \"year\": \""+args.getString(15)+"\",\n" +
-                // "        \"month\": \""+args.getString(16)+"\",\n" +
-                // "        \"day\": \""+args.getString(17)+"\"\n" +
-                // "        },\n" +
+                "        \"age\": {\n" +
+                "        \"age\": \""+args.getString(14)+"\",\n" +
+                "        \"year\": \""+args.getString(15)+"\",\n" +
+                "        \"month\": \""+args.getString(16)+"\",\n" +
+                "        \"day\": \""+args.getString(17)+"\"\n" +
+                "        },\n" +
                 "        \"contacts\": [\n" +
                 "        {\n" +
                 "        \"email\": \""+args.getString(18)+"\",\n" +
                 "        \"phone\": \""+args.getString(19)+"\",\n" +
                 "        \"address\": {\n" +
-                "        \"country\": \""+args.getString(3)+"\"\n" +
+                "        \"country\": \""+args.getString(3)+"\",\n" +
+                "        \"region\": \""+args.getString(4)+"\"\n" +
                 "        }\n" +
                 "        }\n" +
                 "        ]\n" +
@@ -223,9 +224,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        {\n" +
                 "        \"info\": {\n" +
                 "        \"storeZipCode\": \""+args.getString(6)+"\",\n" +
-                "        \"clientName\": \""+args.getString(7)+"\",\n" +
-                "        \"role\": \""+args.getString(2)+"\",\n" +
-                "        \"programName\": \""+args.getString(15)+"\",\n" +
+                "        \"accountName\": \""+args.getString(7)+"\",\n" +
                 "        \"customerId\": \""+args.getString(8)+"\",\n" +
                 "        \"storeNumber\": \""+args.getString(10)+"\",\n" +
                 "        \"ctype\": \""+args.getString(9)+"\",\n" +
@@ -258,14 +257,19 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     String ClearMsg = args.getString(34);
                     String MenuMsg = args.getString(35);
 
-                    String ButtonOpt1Msg = args.getString(36);
-                    String ButtonOpt1Value = args.getString(37);
-                    String ButtonOpt2Msg = args.getString(38);
-                    String ButtonOpt2Value = args.getString(39);
+                    String WaitingTitle = args.getString(36);
+                    String WaitingMsg = args.getString(37);
+                    String UnassignedTitle = args.getString(38);
+                    String UnassignedMsg = args.getString(39);
+
+                    String QuickOpt1Title = args.getString(42);
+                    String QuickOpt1Msg = args.getString(43);
+                    String QuickOpt2Title = args.getString(44);
+                    String QuickOpt2Msg = args.getString(45);
 
                     String languageApp = args.getString(40);
 
-                    startAuthenticatedConversation(appIDs,jwt,partyID,engagement,entrypoint,AppIdentifier,WelcomeMsg,ChatTitleHeader,ClearConversationMsg,ClearConfirmMsg,ChooseMsg,RevolvedTileMsg,ResolvedConfirmMsg,ClearTitleMsg,YesMsg,CancelMsg,ClearMsg,MenuMsg,ButtonOpt1Msg,ButtonOpt1Value,ButtonOpt2Msg,ButtonOpt2Value,languageApp);
+                    startAuthenticatedConversation(appIDs,jwt,partyID,engagement,entrypoint,AppIdentifier,WelcomeMsg,ChatTitleHeader,ClearConversationMsg,ClearConfirmMsg,ChooseMsg,RevolvedTileMsg,ResolvedConfirmMsg,ClearTitleMsg,YesMsg,CancelMsg,ClearMsg,MenuMsg,WaitingTitle,WaitingMsg,UnassignedTitle,UnassignedMsg,languageApp,QuickOpt1Title,QuickOpt1Msg,QuickOpt2Title,QuickOpt2Msg);
                 } else {
                     Log.d(TAG, "Messaging SDK: Start conversation");
                     String partyID = args.getString(2);
@@ -433,7 +437,7 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
             });
         }
 
-    private void startAuthenticatedConversation(final String appID, final String token, final String partyID, final String engagement, final String entrypoint, final String AppIdentifier, final String WelcomeMsg, final String ChatTitleHeader, final String ClearConversationMsg, final String ClearConfirmMsg, final String ChooseMsg, final String RevolvedTileMsg, final String ResolvedConfirmMsg, final String ClearTitleMsg, final String YesMsg, final String CancelMsg, final String ClearMsg, final String MenuMsg, final String ButtonOpt1Msg, final String ButtonOpt1Value, final String ButtonOpt2Msg, final String ButtonOpt2Value, final String languageApp) {
+    private void startAuthenticatedConversation(final String appID, final String token, final String partyID, final String engagement, final String entrypoint, final String AppIdentifier, final String WelcomeMsg, final String ChatTitleHeader, final String ClearConversationMsg, final String ClearConfirmMsg, final String ChooseMsg, final String RevolvedTileMsg, final String ResolvedConfirmMsg, final String ClearTitleMsg, final String YesMsg, final String CancelMsg, final String ClearMsg, final String MenuMsg, final String WaitingTitle, final String WaitingMsg, final String UnassignedTitle, final String UnassignedMsg, final String languageApp, final String QuickOpt1Title, final String QuickOpt1Msg, final String QuickOpt2Title, final String QuickOpt2Msg) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -471,10 +475,15 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                     intent.putExtra("EXTRA_ClearMsg", ClearMsg);
                     intent.putExtra("EXTRA_MenuMsg", MenuMsg);
 
-                    intent.putExtra("EXTRA_ButtonOpt1Msg", ButtonOpt1Msg);
-                    intent.putExtra("EXTRA_ButtonOpt1Value", ButtonOpt1Value);
-                    intent.putExtra("EXTRA_ButtonOpt2Msg", ButtonOpt2Msg);
-                    intent.putExtra("EXTRA_ButtonOpt2Value", ButtonOpt2Value);
+                    intent.putExtra("EXTRA_WaitingTitle", WaitingTitle);
+                    intent.putExtra("EXTRA_WaitingMsg", WaitingMsg);
+                    intent.putExtra("EXTRA_UnassignedTitle", UnassignedTitle);
+                    intent.putExtra("EXTRA_UnassignedMsg", UnassignedMsg);
+
+                    intent.putExtra("EXTRA_QuickOpt1Title", QuickOpt1Title);
+                    intent.putExtra("EXTRA_QuickOpt1Msg", QuickOpt1Msg);
+                    intent.putExtra("EXTRA_QuickOpt2Title", QuickOpt2Title);
+                    intent.putExtra("EXTRA_QuickOpt2Msg", QuickOpt2Msg);
                     
                     intent.putExtra("EXTRA_PROFILE", uProfile.toString());
                     cordova.getActivity().startActivity(intent);
