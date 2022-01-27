@@ -562,9 +562,9 @@ extension String {
                         [
                             "info": [
                                 "storeZipCode": zipcode,
-                                "clientName": accountName,
+                                "accountName": accountName,
                                 "role": partyID,
-                                "programName": programName,
+                                "companyBranch": programName,
                                 "customerId": customerID,
                                 "storeNumber": storedNumber,
                                 "ctype": ctype,

@@ -223,9 +223,9 @@ public class LPMessagingSDKPlugin extends CordovaPlugin {
                 "        {\n" +
                 "        \"info\": {\n" +
                 "        \"storeZipCode\": \""+args.getString(6)+"\",\n" +
-                "        \"clientName\": \""+args.getString(7)+"\",\n" +
+                "        \"accountName\": \""+args.getString(7)+"\",\n" +
                 "        \"role\": \""+args.getString(2)+"\",\n" +
-                "        \"programName\": \""+args.getString(15)+"\",\n" +
+                "        \"companyBranch\": \""+args.getString(15)+"\",\n" +
                 "        \"customerId\": \""+args.getString(8)+"\",\n" +
                 "        \"storeNumber\": \""+args.getString(10)+"\",\n" +
                 "        \"ctype\": \""+args.getString(9)+"\",\n" +
