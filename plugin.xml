@@ -33,7 +33,7 @@
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
             <activity android:label="ChatActivity" android:name="com.liveperson.plugin.ChatActivity" android:theme="@style/ThemeSwipeBack"></activity>
-			<service android:name="com.liveperson.plugin.MyFirebaseMessagingService">
+			<service android:name="com.liveperson.plugin.MyFirebaseMessagingService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
