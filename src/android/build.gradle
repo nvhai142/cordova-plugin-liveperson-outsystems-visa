@@ -13,7 +13,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.google.gms:google-services:4.3.3'
+   // classpath 'com.google.gms:google-services:4.3.3'
     classpath 'com.android.tools.build:gradle:3.5.2'
   }
 }
@@ -33,5 +33,5 @@ dependencies {
 }
 
 cdvPluginPostBuildExtras.add({
-  apply plugin: 'com.google.gms.google-services'
+  //apply plugin: 'com.google.gms.google-services'
 })
